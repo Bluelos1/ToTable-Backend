@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ToTable.Controllers;
+using ToTable.Interfaces;
 using ToTable.Models;
 
 namespace ToTable.Services;
