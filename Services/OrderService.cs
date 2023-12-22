@@ -1,8 +1,6 @@
-﻿using ToTable.Interfaces;
-
 namespace ToTable.Services;
 
-public class OrderService : IOrderService
+public class OrderService
 {
     
 }

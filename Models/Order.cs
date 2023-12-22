@@ -9,5 +9,4 @@ public class Order
     public Waiter Waiter { get; set; } 
     public Payment Payment { get; set; }
     public Table Table { get; set; }
-    public ICollection<OrderItem> OrderItems { get; set; }
 }

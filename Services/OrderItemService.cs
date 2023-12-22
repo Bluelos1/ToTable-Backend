@@ -1,4 +1,4 @@
-﻿namespace ToTable.Services;
+namespace ToTable.Services;
 
 public class OrderItemService
 {
