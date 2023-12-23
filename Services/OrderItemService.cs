@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using ToTable.Interfaces;
 using ToTable.Models;
 
@@ -12,28 +14,37 @@ public class OrderItemService : IOrderItemItemService
     {
         _context = context;
     }
+
     public Task<List<OrderItem>> GetOrderItemItems()
     {
-        throw new NotImplementedException();
+        return _context.OrderItemItems.ToListAsync();
     }
 
     public Task<OrderItem> GetOrderItem(int id)
     {
-        throw new NotImplementedException();
+        return _context.OrderItemItems.FirstOrDefaultAsync(x => x.ItemId == id);
+    }   
+
+    public async Task PostOrderItem(OrderItem OrderItem)
+    {
+        _context.OrderItemItems.Add(OrderItem);
+        await _context.SaveChangesAsync();
     }
 
-    public Task PostOrderItem(OrderItem OrderItem)
+    public async Task PutOrderItem(int id, OrderItem OrderItem)
     {
-        throw new NotImplementedException();
+        _context.Entry(OrderItem).State = EntityState.Modified;
+
     }
 
-    public Task PutOrderItem(int id, OrderItem OrderItem)
+    public async Task DeleteOrderItem(int id)
     {
-        throw new NotImplementedException();
-    }
+        var item = await _context.OrderItemItems.FindAsync(id);
+        if (item == null)
+        {
+            _context.OrderItemItems.Remove(item);
+            await _context.SaveChangesAsync();
+        }
 
-    public Task DeleteOrderItem(int id)
-    {
-        throw new NotImplementedException();
-    }
+}
 }
