@@ -1,14 +1,15 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ToTable.Models;
 
-namespace ToTable.Interfaces;
-
-
-
-public interface IOrderItemItemService
+namespace ToTable.Interfaces
 {
-    Task<List<OrderItem>> GetOrderItemItems();
-    Task<OrderItem> GetOrderItem(int id);
-    Task PostOrderItem(OrderItem OrderItem);
-    Task PutOrderItem(int id, OrderItem OrderItem);
-    Task DeleteOrderItem(int id);
+    public interface IOrderItemItemService
+    {
+        Task<List<OrderItem>> GetOrderItemItems();
+        Task<OrderItem> GetOrderItem(int id);
+        Task PostOrderItem(OrderItem orderItem);
+        Task PutOrderItem(int id, OrderItem orderItem);
+        Task DeleteOrderItem(int id);
+    }
 }

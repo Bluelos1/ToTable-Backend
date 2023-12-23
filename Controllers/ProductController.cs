@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ToTable.Models;
 
 namespace ToTable.Controllers
@@ -23,20 +21,22 @@ namespace ToTable.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductItems()
         {
-          if (_context.ProductItems == null)
-          {
-              return NotFound();
-          }
+            if (_context.ProductItems == null)
+            {
+                return NotFound();
+            }
+
             return await _context.ProductItems.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-          if (_context.ProductItems == null)
-          {
-              return NotFound();
-          }
+            if (_context.ProductItems == null)
+            {
+                return NotFound();
+            }
+
             var product = await _context.ProductItems.FindAsync(id);
 
             if (product == null)
@@ -52,7 +52,7 @@ namespace ToTable.Controllers
         {
             if (id != product.ProductId)
             {
-                return BadRequest();
+                return BadRequest("Invalid Product ID");
             }
 
             _context.Entry(product).State = EntityState.Modified;
@@ -65,7 +65,7 @@ namespace ToTable.Controllers
             {
                 if (!ProductExists(id))
                 {
-                    return NotFound();
+                    return NotFound("Product not found");
                 }
                 else
                 {
@@ -79,10 +79,11 @@ namespace ToTable.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
-          if (_context.ProductItems == null)
-          {
-              return Problem("Entity set 'ToTableDbContext.ProductItems'  is null.");
-          }
+            if (_context.ProductItems == null)
+            {
+                return Problem("Entity set 'ToTableDbContext.ProductItems' is null.");
+            }
+
             _context.ProductItems.Add(product);
             await _context.SaveChangesAsync();
 
@@ -96,6 +97,7 @@ namespace ToTable.Controllers
             {
                 return NotFound();
             }
+
             var product = await _context.ProductItems.FindAsync(id);
             if (product == null)
             {
