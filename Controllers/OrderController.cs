@@ -110,6 +110,38 @@ namespace ToTable.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id}/updatestatus")]
+public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] string orderStatus)
+{
+    var order = await _context.OrderItems.FindAsync(id);
+
+    if (order == null)
+    {
+        return NotFound();
+    }
+
+    order.OrderStatus = orderStatus;
+    _context.Entry(order).State = EntityState.Modified;
+
+    try
+    {
+        await _context.SaveChangesAsync();
+    }
+    catch (DbUpdateConcurrencyException)
+    {
+        if (!OrderExists(id))
+        {
+            return NotFound();
+        }
+        else
+        {
+            throw;
+        }
+    }
+
+    return NoContent();
+}
+
         private bool OrderExists(int id)
         {
             return (_context.OrderItems?.Any(e => e.OrderId == id)).GetValueOrDefault();
