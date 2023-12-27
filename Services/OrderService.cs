@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ToTable.Interfaces;
 using ToTable.Models;
 
@@ -7,34 +8,50 @@ namespace ToTable.Services;
 public class OrderService : IOrderService
 {
     private readonly ToTableDbContext _context;
-
-    public OrderService(ToTableDbContext context)
+    private readonly ILogger<OrderService> _logger;
+    public OrderService(ToTableDbContext context, ILogger<OrderService> logger )
     {
         _context = context;
+        _logger = logger;
     }
 
     public Task<List<Order>> GetOrderItems()
     {
-        throw new NotImplementedException();
+        try
+        {
+            return _context.OrderItems.ToListAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e,"Not found");
+            throw;
+        }
     }
 
     public Task<Order> GetOrder(int id)
     {
-        throw new NotImplementedException();
+        return _context.OrderItems.FirstOrDefaultAsync(x => x.OrderId == id);
     }
 
-    public Task PostOrder(Order Order)
+    public async Task PostOrder(Order Order)
     {
-        throw new NotImplementedException();
+        _context.OrderItems.Add(Order);
+        await _context.SaveChangesAsync();
     }
 
-    public Task PutOrder(int id, Order Order)
+    public async Task PutOrder(int id, Order Order)
     {
-        throw new NotImplementedException();
+        _context.Entry(Order).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
     }
 
-    public Task DeleteOrder(int id)
+    public async Task DeleteOrder(int id)
     {
-        throw new NotImplementedException();
+        var item = await _context.OrderItems.FindAsync(id);
+        if (item != null)
+        {
+            _context.OrderItems.Remove(item);
+            await _context.SaveChangesAsync();
+        }
     }
 }

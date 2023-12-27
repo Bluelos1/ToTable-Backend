@@ -5,19 +5,30 @@ using ToTable.Models;
 
 namespace ToTable.Services;
 
-public class OrderItemService : IOrderItemItemService
+public class OrderItemService : IOrderItemService
 {
     
     private readonly ToTableDbContext _context;
+    private readonly ILogger<OrderItemService> _logger;
 
-    public OrderItemService(ToTableDbContext context)
+
+    public OrderItemService(ToTableDbContext context, ILogger<OrderItemService> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public Task<List<OrderItem>> GetOrderItemItems()
     {
-        return _context.OrderItemItems.ToListAsync();
+        try
+        {
+            return _context.OrderItemItems.ToListAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e,"Not Found");
+            throw;
+        }
     }
 
     public Task<OrderItem> GetOrderItem(int id)
@@ -34,17 +45,16 @@ public class OrderItemService : IOrderItemItemService
     public async Task PutOrderItem(int id, OrderItem OrderItem)
     {
         _context.Entry(OrderItem).State = EntityState.Modified;
-
+        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteOrderItem(int id)
     {
         var item = await _context.OrderItemItems.FindAsync(id);
-        if (item == null)
+        if (item != null)
         {
             _context.OrderItemItems.Remove(item);
             await _context.SaveChangesAsync();
         }
-
-}
+    }
 }

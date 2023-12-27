@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ToTable.Interfaces;
 using ToTable.Models;
 
 namespace ToTable.Controllers
@@ -13,106 +14,67 @@ namespace ToTable.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
-        private readonly ToTableDbContext _context;
+        private readonly IPaymentService _paymentService;
 
-        public PaymentController(ToTableDbContext context)
+        public PaymentController(IPaymentService paymentService)
         {
-            _context = context;
+            _paymentService = paymentService;
         }
 
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrderItems()
+        public async Task<ActionResult<List<Payment>>> GetOrderItems()
         {
-          if (_context.OrderItems == null)
+            var item = _paymentService.GetPaymentItems();
+          if (item == null)
           {
               return NotFound();
           }
-            return await _context.OrderItems.ToListAsync();
+            return await item;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(int id)
+        public async Task<ActionResult<Payment>> GetOrder(int id)
         {
-          if (_context.OrderItems == null)
-          {
-              return NotFound();
-          }
-            var order = await _context.OrderItems.FindAsync(id);
-
-            if (order == null)
+            var paymentItem = _paymentService.GetPayment(id);
+            if (paymentItem == null)
             {
                 return NotFound();
             }
-
-            return order;
+            return await paymentItem;
         }
 
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(int id, Order order)
+        public async Task<IActionResult> PutOrder(int id, Payment payment)
         {
-            if (id != order.OrderId)
+           if (id != payment.PayId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(order).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OrderExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await _paymentService.PutPayment(id, payment);
             return NoContent();
         }
 
        
         [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(Order order)
+        public async Task<ActionResult<Payment>> PostOrder(Payment payment)
         {
-          if (_context.OrderItems == null)
-          {
-              return Problem("Entity set 'ToTableDbContext.OrderItems'  is null.");
-          }
-            _context.OrderItems.Add(order);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetOrder", new { id = order.OrderId }, order);
+            await _paymentService.PostPayment(payment);
+            return CreatedAtAction("GetOrder", new { id = payment.PayId }, payment);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            if (_context.OrderItems == null)
-            {
-                return NotFound();
-            }
-            var order = await _context.OrderItems.FindAsync(id);
-            if (order == null)
+            if (_paymentService.GetPayment(id) == null)
             {
                 return NotFound();
             }
 
-            _context.OrderItems.Remove(order);
-            await _context.SaveChangesAsync();
-
+            await _paymentService.DeletePayment(id);
             return NoContent();
-        }
-
-        private bool OrderExists(int id)
-        {
-            return (_context.OrderItems?.Any(e => e.OrderId == id)).GetValueOrDefault();
         }
     }
 }

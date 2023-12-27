@@ -14,109 +14,67 @@ namespace ToTable.Controllers
     [ApiController]
     public class OrderItemController : ControllerBase
     {
-        private readonly ToTableDbContext _context;
+        
         private readonly IOrderItemService _itemService;
 
-        public OrderItemController(ToTableDbContext context, IOrderItemService itemService)
+        public OrderItemController(IOrderItemService itemService)
         {
-            _context = context;
             _itemService = itemService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrderItems()
+        public async Task<ActionResult<List<OrderItem>>> GetOrderItems()
         {
-          if (_context.OrderItems == null)
+          if (_itemService.GetOrderItemItems() == null)
           {
               return NotFound();
           }
-            return await _context.OrderItems.ToListAsync();
+
+          return await _itemService.GetOrderItemItems();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(int id)
+        public async Task<ActionResult<OrderItem>> GetOrder(int id)
         {
-          if (_context.OrderItems == null)
+          if (_itemService.GetOrderItem(id) == null)
           {
               return NotFound();
           }
-            var order = await _context.OrderItems.FindAsync(id);
-
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            return order;
+            return await _itemService.GetOrderItem(id);
         }
 
        
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(int id, Order order)
+        public async Task<ActionResult> PutOrder(int id, OrderItem orderItem)
         {
-            if (id != order.OrderId)
+            if (id != orderItem.ItemId)
             {
                 return BadRequest();
             }
-
-            _context.Entry(order).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OrderExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await _itemService.PutOrderItem(id, orderItem);
             return NoContent();
         }
 
         
         [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(Order order)
+        public async Task<ActionResult<OrderItem>> PostOrder(OrderItem orderItem)
         {
-          if (_context.OrderItems == null)
-          {
-              return Problem("Entity set 'ToTableDbContext.OrderItems'  is null.");
-          }
-            _context.OrderItems.Add(order);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetOrder", new { id = order.OrderId }, order);
+            await _itemService.PostOrderItem(orderItem);
+            return CreatedAtAction("GetOrder", new { id = orderItem.ItemId }, orderItem);
         }
 
-        // DELETE: api/OrderItem/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(int id)
+        public async Task<ActionResult> DeleteOrder(int id)
         {
-            if (_context.OrderItems == null)
-            {
-                return NotFound();
-            }
-            var order = await _context.OrderItems.FindAsync(id);
-            if (order == null)
+            if (_itemService.GetOrderItem(id) == null)
             {
                 return NotFound();
             }
 
-            _context.OrderItems.Remove(order);
-            await _context.SaveChangesAsync();
-
+            await _itemService.DeleteOrderItem(id);
             return NoContent();
         }
 
-        private bool OrderExists(int id)
-        {
-            return (_context.OrderItems?.Any(e => e.OrderId == id)).GetValueOrDefault();
-        }
+       
     }
 }

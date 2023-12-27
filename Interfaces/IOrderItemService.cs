@@ -4,7 +4,7 @@ namespace ToTable.Interfaces;
 
 
 
-public interface IOrderItemItemService
+public interface IOrderItemService
 {
     Task<List<OrderItem>> GetOrderItemItems();
     Task<OrderItem> GetOrderItem(int id);

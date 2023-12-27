@@ -14,40 +14,33 @@ namespace ToTable.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly ToTableDbContext _context;
-        private readonly IOrderService _orderService;
+        private readonly IProductService _productService;
 
-        public ProductController(ToTableDbContext context, IOrderService orderService)
+        public ProductController(IProductService productService)
         {
-            _context = context;
-            _orderService = orderService;
+            _productService = productService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductItems()
-        {
-          if (_context.ProductItems == null)
+        { 
+            var productItems = _productService.GetProductItems();
+          if (productItems== null)
           {
               return NotFound();
           }
-            return await _context.ProductItems.ToListAsync();
+            return await productItems;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-          if (_context.ProductItems == null)
+            var item = await _productService.GetProduct(id);
+          if (item == null)
           {
               return NotFound();
           }
-            var product = await _context.ProductItems.FindAsync(id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return product;
+            return item;
         }
 
         
@@ -59,24 +52,7 @@ namespace ToTable.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(product).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await _productService.PutProduct(id, product);
             return NoContent();
         }
 
@@ -84,38 +60,20 @@ namespace ToTable.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
-          if (_context.ProductItems == null)
-          {
-              return Problem("Entity set 'ToTableDbContext.ProductItems'  is null.");
-          }
-            _context.ProductItems.Add(product);
-            await _context.SaveChangesAsync();
-
+            await _productService.PostProduct(product);
             return CreatedAtAction("GetProduct", new { id = product.ProductId }, product);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            if (_context.ProductItems == null)
-            {
-                return NotFound();
-            }
-            var product = await _context.ProductItems.FindAsync(id);
-            if (product == null)
+            if (_productService.GetProduct(id)== null)
             {
                 return NotFound();
             }
 
-            _context.ProductItems.Remove(product);
-            await _context.SaveChangesAsync();
-
+            await _productService.DeleteProduct(id);
             return NoContent();
-        }
-
-        private bool ProductExists(int id)
-        {
-            return (_context.ProductItems?.Any(e => e.ProductId == id)).GetValueOrDefault();
         }
     }
 }
