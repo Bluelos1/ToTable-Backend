@@ -23,6 +23,7 @@ public class PaymentService : IPaymentService
         }
         catch (Exception e)
         {
+            
             _logger.LogError(e,"NotFound");
             throw;
         }

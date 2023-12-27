@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using ToTable.Controllers;
+using ToTable.Interfaces;
 using ToTable.Models;
+using ToTable.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -10,7 +14,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ToTableDbContext>(opt =>
     opt.UseInMemoryDatabase("ToTable"));
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<ITableService, TableService>();
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
