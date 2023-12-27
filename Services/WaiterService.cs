@@ -1,6 +1,8 @@
-﻿namespace ToTable.Services;
+﻿using ToTable.Interfaces;
 
-public class WaiterService
+namespace ToTable.Services;
+
+public class WaiterService : IWaiterService
 {
     
 }
