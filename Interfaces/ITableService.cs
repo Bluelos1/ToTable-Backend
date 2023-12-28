@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ToTable.Models;
 
-namespace ToTable.Controllers;
+namespace ToTable.Interfaces;
 
 public interface ITableService
 {
