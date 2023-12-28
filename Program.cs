@@ -5,7 +5,7 @@ using ToTable.Models;
 using ToTable.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var Configuration = builder.Configuration;
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -13,7 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ToTableDbContext>(opt =>
-    opt.UseInMemoryDatabase("ToTable"));
+    opt.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IProductService, ProductService>();

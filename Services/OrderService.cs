@@ -54,4 +54,9 @@ public class OrderService : IOrderService
             await _context.SaveChangesAsync();
         }
     }
+
+    public Task<bool> OrderExists(int id)
+    {
+        return _context.OrderItems.AnyAsync(x => x.OrderId == id);
+    }
 }

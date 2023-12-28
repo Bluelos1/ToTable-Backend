@@ -54,5 +54,11 @@ public class ProductService : IProductService
         {
             _context.ProductItems.Remove(item);
             await _context.SaveChangesAsync();
-        }     }
+        }
+    }
+
+    public Task<bool> ProductExists(int id)
+    {
+        return _context.ProductItems.AnyAsync(x => x.ProductId == id);
+    }       
 }

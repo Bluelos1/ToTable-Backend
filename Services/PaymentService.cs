@@ -55,4 +55,9 @@ public class PaymentService : IPaymentService
             await _context.SaveChangesAsync();
         }
     }
+
+    public Task<bool> PaymentExists(int id)
+    {
+        return _context.PaymentItems.AnyAsync(x => x.PayId == id);
+    } 
 }

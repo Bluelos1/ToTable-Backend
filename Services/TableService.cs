@@ -58,5 +58,9 @@ public class TableService : ITableService
             await _context.SaveChangesAsync();
         }
     }
-    
+
+    public Task<bool> TableExists(int id)
+    {
+        return _context.PaymentItems.AnyAsync(x => x.PayId == id);
+    }
 }
