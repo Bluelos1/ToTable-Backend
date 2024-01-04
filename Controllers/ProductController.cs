@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ToTable.Interfaces;
 using ToTable.Models;
 
 namespace ToTable.Controllers
@@ -11,42 +15,36 @@ namespace ToTable.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly ToTableDbContext _context;
+        private readonly IProductService _productService;
 
-        public ProductController(ToTableDbContext context)
+        public ProductController(IProductService productService)
         {
-            _context = context;
+            _productService = productService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductItems()
-        {
-            if (_context.ProductItems == null)
-            {
-                return NotFound();
-            }
-
-            return await _context.ProductItems.ToListAsync();
+        { 
+            var productItems = _productService.GetProductItems();
+          if (productItems== null)
+          {
+              return NotFound();
+          }
+            return await productItems;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            if (_context.ProductItems == null)
-            {
-                return NotFound();
-            }
-
-            var product = await _context.ProductItems.FindAsync(id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return product;
+            var item = await _productService.GetProduct(id);
+          if (item == null)
+          {
+              return NotFound();
+          }
+            return item;
         }
 
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id, Product product)
         {
@@ -55,64 +53,28 @@ namespace ToTable.Controllers
                 return BadRequest("Invalid Product ID");
             }
 
-            _context.Entry(product).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound("Product not found");
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await _productService.PutProduct(id, product);
             return NoContent();
         }
 
+        
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
-            if (_context.ProductItems == null)
-            {
-                return Problem("Entity set 'ToTableDbContext.ProductItems' is null.");
-            }
-
-            _context.ProductItems.Add(product);
-            await _context.SaveChangesAsync();
-
+            await _productService.PostProduct(product);
             return CreatedAtAction("GetProduct", new { id = product.ProductId }, product);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            if (_context.ProductItems == null)
+            if (_productService.GetProduct(id)== null)
             {
                 return NotFound();
             }
 
-            var product = await _context.ProductItems.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            _context.ProductItems.Remove(product);
-            await _context.SaveChangesAsync();
-
+            await _productService.DeleteProduct(id);
             return NoContent();
-        }
-
-        private bool ProductExists(int id)
-        {
-            return (_context.ProductItems?.Any(e => e.ProductId == id)).GetValueOrDefault();
         }
     }
 }

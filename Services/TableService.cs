@@ -5,31 +5,38 @@ using ToTable.Controllers;
 using ToTable.Interfaces;
 using ToTable.Models;
 
-namespace ToTable.Services
+namespace ToTable.Services;
+
+public class TableService : ITableService
 {
-    public class TableService : ITableService
+    private readonly ToTableDbContext _context;
+    private readonly ILogger<TableService> _logger;
+
+
+    public TableService(ToTableDbContext context, ILogger<TableService> logger)
     {
-        private readonly ToTableDbContext _context;
+        _logger = logger;
+        _context = context;
+    }
 
-        public TableService(ToTableDbContext context)
+    public Task<List<Table>> GetTableItems()
+    {
+        try
         {
-            _context = context;
+            return  _context.TableItems.ToListAsync();
         }
-        private bool TableExist(int id)
-{
-    return _context.TableItems.Any(e => e.TabId == id);
-}
-
-
-        public async Task<List<Table>> GetTableItems()
+        catch (Exception e)
         {
-            return await _context.TableItems.ToListAsync();
+            _logger.LogError(e,"Notfound");
+            throw;
         }
+    }
 
-        public async Task<Table> GetTable(int id)
-        {
-            return await _context.TableItems.FirstOrDefaultAsync(x => x.TabId == id);
-        }
+    public async Task<Table> GetTable(int id)
+    {
+        var table = await _context.TableItems.FirstOrDefaultAsync(x => x.TabId == id);
+        return table;
+    }
 
         public async Task PostTable(Table table)
         {
@@ -37,49 +44,31 @@ namespace ToTable.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task PutTable(int id, Table table)
-        {
-            if (id != table.TabId)
-            {
-                // Błąd zgodności ID
-                throw new System.ArgumentException("Invalid Table ID");
-            }
-
-            _context.Entry(table).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TableExist(id))
-                {
-                    
-                    throw new System.InvalidOperationException("Table not found");
-                }
-                else
-                {
-               
-                    throw;
-                }
-            }
-        }
-
-        public async Task DeleteTable(int id)
-        {
-            var table = await _context.TableItems.FindAsync(id);
-            if (table != null)
-            {
-                _context.TableItems.Remove(table);
-                await _context.SaveChangesAsync();
-            }
-            else
-            
-                throw new System.InvalidOperationException("Table not found");
-            }
-        }
-
-      
+    public async Task PutTable(int id, Table table)
+    {
+        _context.Entry(table).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
     }
 
+    public async Task DeleteTable(int id)
+    {
+        var table = await _context.TableItems.FindAsync(id);
+        if (table != null)
+        {
+            _context.TableItems.Remove(table);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public Task<bool> TableExists(int id)
+    {
+        return _context.PaymentItems.AnyAsync(x => x.PayId == id);
+    }
+    
+    public async Task<int> GetAvailableTableId()
+    {
+        var availableTable = await _context.TableItems
+            .FirstOrDefaultAsync(t => t.TabStatus);
+        return availableTable?.TabId ?? 0; 
+    }
+}

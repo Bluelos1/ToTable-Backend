@@ -1,84 +1,63 @@
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using ToTable.Interfaces;
 using ToTable.Models;
 
-namespace ToTable.Services
+namespace ToTable.Services;
+
+public class PaymentService : IPaymentService
 {
-    public class PaymentService : IPaymentService
+    private readonly ToTableDbContext _context;
+    private readonly ILogger<PaymentService> _logger;
+
+    public PaymentService(ToTableDbContext context, ILogger<PaymentService> logger)
     {
-        private readonly ToTableDbContext _context;
+        _context = context;
+        _logger = logger;
+    }
 
-        public PaymentService(ToTableDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<List<Payment>> GetPaymentItems()
+    public async Task<List<Payment>> GetPaymentItems()
+    {
+        try
         {
             return await _context.PaymentItems.ToListAsync();
         }
-
-        public async Task<Payment> GetPayment(int id)
+        catch (Exception e)
         {
-            return await _context.PaymentItems.FirstOrDefaultAsync(x => x.PayId == id);
-        }
-
-        public async Task PostPayment(Payment payment)
-        {
-            _context.PaymentItems.Add(payment);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task PutPayment(int id, Payment payment)
-        {
-            if (id != payment.PayId)
-            {
-           
-                throw new ArgumentException("Invalid Payment ID");
-            }
-
-            _context.Entry(payment).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PaymentExists(id))
-                {
-              
-                    throw new InvalidOperationException("Payment not found");
-                }
-                else
-                {
-              
-                    throw;
-                }
-            }
-        }
-
-        public async Task DeletePayment(int id)
-        {
-            var payment = await _context.PaymentItems.FindAsync(id);
-            if (payment != null)
-            {
-                _context.PaymentItems.Remove(payment);
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-       
-                throw new InvalidOperationException("Payment not found");
-            }
-        }
-
-        private bool PaymentExists(int id)
-        {
-            return _context.PaymentItems.Any(e => e.PayId == id);
+            
+            _logger.LogError(e,"NotFound");
+            throw;
         }
     }
+
+    public async Task<Payment?> GetPayment(int id)
+    {
+        return await _context.PaymentItems.FirstOrDefaultAsync(x => x.PayId == id);
+    }
+
+    public async Task PostPayment(Payment payment)
+    {
+        _context.PaymentItems.Add(payment);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task PutPayment(int id, Payment payment)
+    {
+        _context.Entry(payment).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeletePayment(int id)
+    {
+        var item = await _context.PaymentItems.FindAsync(id);
+        if (item != null)
+        {
+            _context.PaymentItems.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public Task<bool> PaymentExists(int id)
+    {
+        return _context.PaymentItems.AnyAsync(x => x.PayId == id);
+    } 
 }

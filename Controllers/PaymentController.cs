@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ToTable.Models;
 
 namespace ToTable.Controllers
@@ -11,46 +14,44 @@ namespace ToTable.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
-        private readonly ToTableDbContext _context;
+        private readonly IPaymentService _paymentService;
 
-        public PaymentController(ToTableDbContext context)
+        public PaymentController(IPaymentService paymentService)
         {
-            _context = context;
+            _paymentService = paymentService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Payment>>> GetPaymentItems()
-        {
-            if (_context.PaymentItems == null)
-            {
-                return NotFound();
-            }
 
+        [HttpGet]
+        public async Task<ActionResult<List<Payment>>> GetOrderItems()
+        {
+          if (_context.PaymentItems == null)
+          {
+              return NotFound();
+          }
             return await _context.PaymentItems.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Payment>> GetPayment(int id)
+        public async Task<ActionResult<Payment>> GetOrder(int id)
         {
-            if (_context.PaymentItems == null)
-            {
-                return NotFound();
-            }
-
+          if (_context.PaymentItems == null)
+          {
+              return NotFound();
+          }
             var payment = await _context.PaymentItems.FindAsync(id);
 
             if (payment == null)
             {
                 return NotFound();
             }
-
-            return payment;
+            return await paymentItem;
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPayment(int id, Payment payment)
+        public async Task<IActionResult> PutOrder(int id, Payment payment)
         {
-            if (id != payment.PayId)
+           if (id != payment.PayId)
             {
                 return BadRequest("Invalid Payment ID");
             }
@@ -65,7 +66,7 @@ namespace ToTable.Controllers
             {
                 if (!PaymentExists(id))
                 {
-                    return NotFound("Payment not found");
+                    return NotFound();
                 }
                 else
                 {
@@ -76,14 +77,14 @@ namespace ToTable.Controllers
             return NoContent();
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Payment>> PostPayment(Payment payment)
-        {
-            if (_context.PaymentItems == null)
-            {
-                return Problem("Entity set 'ToTableDbContext.PaymentItems' is null.");
-            }
 
+        [HttpPost]
+        public async Task<ActionResult<Payment>> PostOrder(Payment payment)
+        {
+          if (_context.PaymentItems == null)
+          {
+              return Problem("Entity set 'ToTableDbContext.PaymentItems'  is null.");
+          }
             _context.PaymentItems.Add(payment);
             await _context.SaveChangesAsync();
 
@@ -91,28 +92,20 @@ namespace ToTable.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePayment(int id)
+        public async Task<IActionResult> DeleteOrder(int id)
         {
             if (_context.PaymentItems == null)
             {
                 return NotFound();
             }
-
             var payment = await _context.PaymentItems.FindAsync(id);
             if (payment == null)
             {
                 return NotFound();
             }
 
-            _context.PaymentItems.Remove(payment);
-            await _context.SaveChangesAsync();
-
+            await _paymentService.DeletePayment(id);
             return NoContent();
-        }
-
-        private bool PaymentExists(int id)
-        {
-            return (_context.PaymentItems?.Any(e => e.PayId == id)).GetValueOrDefault();
         }
     }
 }
