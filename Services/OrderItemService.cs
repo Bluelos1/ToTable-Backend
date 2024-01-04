@@ -6,6 +6,7 @@ using ToTable.Models;
 
 namespace ToTable.Services;
 
+
 public class OrderItemService : IOrderItemService
 {
     
@@ -58,16 +59,15 @@ public class OrderItemService : IOrderItemService
             await _context.SaveChangesAsync();
         }
     }
+    
     public async Task AddProductToOrder(OrderItemDto orderItemDto)
     {
-        var product = await _context.ProductItems.SingleOrDefaultAsync(p => p.ProductId == orderItemDto.ProductId);
+        var product = await _context.ProductItems.FindAsync(orderItemDto.ProductId);
         var orderItem = new OrderItem
         {
-            
-            OrderId = null,
+            OrderId = orderItemDto.OrderItemId,
             ProductId = product.ProductId,
             ItemQuantity = orderItemDto.ItemQuantity,
-            Product = product,
             ItemPrice = product.ProductPrice * orderItemDto.ItemQuantity
         };
         _context.OrderItemItems.Add(orderItem);

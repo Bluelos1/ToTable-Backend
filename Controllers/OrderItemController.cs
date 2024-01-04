@@ -76,14 +76,14 @@ namespace ToTable.Controllers
             await _itemService.DeleteOrderItem(id);
             return NoContent();
         }
-
-        [HttpPost("ProductToOrder")]
+        
+        [HttpPost("Product to order")]
         public async Task<ActionResult> AddProductToOrder(OrderItemDto orderItemDto)
         {
-            await _itemService.AddProductToOrder(orderItemDto);
-            return Ok();
-        }
+             await _itemService.AddProductToOrder(orderItemDto);
+            return CreatedAtAction("GetOrder", new { id = orderItemDto.ProductId }, orderItemDto);
 
+        }
 
        
     }

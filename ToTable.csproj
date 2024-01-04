@@ -27,4 +27,8 @@
       <Folder Include="Services\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Migrations\ToTableDbContextModelSnapshot.cs" />
+    </ItemGroup>
+
 </Project>
