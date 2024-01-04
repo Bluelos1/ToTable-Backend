@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ToTable.Contract;
 using ToTable.Interfaces;
 using ToTable.Models;
 
@@ -25,12 +26,13 @@ namespace ToTable.Controllers
         [HttpGet]
         public async Task<ActionResult<List<OrderItem>>> GetOrderItems()
         {
-          if (_itemService.GetOrderItemItems() == null)
+            var orderItem = _itemService.GetOrderItemItems();
+          if (orderItem == null)
           {
               return NotFound();
           }
 
-          return await _itemService.GetOrderItemItems();
+          return await orderItem;
         }
 
         [HttpGet("{id}")]
@@ -74,6 +76,14 @@ namespace ToTable.Controllers
             await _itemService.DeleteOrderItem(id);
             return NoContent();
         }
+
+        [HttpPost("ProductToOrder")]
+        public async Task<ActionResult> AddProductToOrder(OrderItemDto orderItemDto)
+        {
+            await _itemService.AddProductToOrder(orderItemDto);
+            return Ok();
+        }
+
 
        
     }

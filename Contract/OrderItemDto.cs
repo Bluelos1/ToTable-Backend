@@ -2,7 +2,7 @@ namespace ToTable.Contract;
 
 public class OrderItemDto
 {
-    public int ItemId { get; set; }
     public int ItemQuantity { get; set; }
-    public int ItemPrice { get; set; }
+    //public double ProductPrice { get; set; }
+    public int ProductId { get; set; }
 }

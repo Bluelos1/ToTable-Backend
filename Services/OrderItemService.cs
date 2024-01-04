@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using ToTable.Contract;
 using ToTable.Interfaces;
 using ToTable.Models;
 
@@ -56,6 +57,22 @@ public class OrderItemService : IOrderItemService
             _context.OrderItemItems.Remove(item);
             await _context.SaveChangesAsync();
         }
+    }
+    public async Task AddProductToOrder(OrderItemDto orderItemDto)
+    {
+        var product = await _context.ProductItems.SingleOrDefaultAsync(p => p.ProductId == orderItemDto.ProductId);
+        var orderItem = new OrderItem
+        {
+            
+            OrderId = null,
+            ProductId = product.ProductId,
+            ItemQuantity = orderItemDto.ItemQuantity,
+            Product = product,
+            ItemPrice = product.ProductPrice * orderItemDto.ItemQuantity
+        };
+        _context.OrderItemItems.Add(orderItem);
+        await _context.SaveChangesAsync();
+
     }
 
     public Task<bool> OrderItemExists(int id)

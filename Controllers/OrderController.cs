@@ -25,11 +25,12 @@ namespace ToTable.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrderItems()
         {
-          if (_orderService.GetOrderItems() == null)
+            var order = _orderService.GetOrderItems();
+          if (order == null)
           {
               return NotFound();
           }
-            return await _orderService.GetOrderItems();
+            return await order ;
         }
 
         [HttpGet("{id}")]
