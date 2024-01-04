@@ -73,5 +73,17 @@ namespace ToTable.Controllers
             await _orderService.DeleteOrder(id);
             return NoContent();
         }
+
+        [HttpPost("PostComment")]
+        public async Task<IActionResult> AddCommentToOrder(int id, string comment)
+        {
+            var orderExists = await _orderService.OrderExists(id);
+            if (orderExists)
+            {
+                _orderService.AddCommentToOrder(id, comment);
+            }
+
+            return Ok();
+        }
     }
 }

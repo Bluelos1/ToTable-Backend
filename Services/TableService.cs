@@ -63,4 +63,11 @@ public class TableService : ITableService
     {
         return _context.PaymentItems.AnyAsync(x => x.PayId == id);
     }
+    
+    public async Task<int> GetAvailableTableId()
+    {
+        var availableTable = await _context.TableItems
+            .FirstOrDefaultAsync(t => t.TabStatus);
+        return availableTable?.TabId ?? 0; 
+    }
 }

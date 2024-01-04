@@ -11,6 +11,8 @@ public class OrderItemService : IOrderItemService
 {
     
     private readonly ToTableDbContext _context;
+    private readonly TableService _tableService;
+    private readonly WaiterService _waiterService;
     private readonly ILogger<OrderItemService> _logger;
 
 
@@ -63,9 +65,25 @@ public class OrderItemService : IOrderItemService
     public async Task AddProductToOrder(OrderItemDto orderItemDto)
     {
         var product = await _context.ProductItems.FindAsync(orderItemDto.ProductId);
+        var order = await _context.OrderItems.FirstOrDefaultAsync(x => x.OrderId == orderItemDto.OrderItemId);
+        if (order != null)
+        {
+            new Order
+            {
+                OrderTime = DateTime.Now,
+                OrderStatus = OrderStatus.New,
+                OrderComment = null,
+                WaiterId = await _waiterService.GetAvailableWaiterId(),
+                TableId = await _tableService.GetAvailableTableId(),
+                PaymentId = 0,
+            };
+            _context.OrderItems.Add(order);
+            await _context.SaveChangesAsync(); 
+        }
+        
         var orderItem = new OrderItem
         {
-            OrderId = orderItemDto.OrderItemId,
+            OrderId = order?.OrderId,
             ProductId = product.ProductId,
             ItemQuantity = orderItemDto.ItemQuantity,
             ItemPrice = product.ProductPrice * orderItemDto.ItemQuantity

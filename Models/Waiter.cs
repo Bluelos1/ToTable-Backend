@@ -10,4 +10,5 @@ public class Waiter
     public int WaiterSuma { get; set; }
     public string WaiterLogin { get; set; }
     public string WaiterPassw { get; set; }
+    public bool IsAvailable { get; set; }
 }

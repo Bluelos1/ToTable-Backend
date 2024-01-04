@@ -59,4 +59,14 @@ public class OrderService : IOrderService
     {
         return _context.OrderItems.AnyAsync(x => x.OrderId == id);
     }
+    
+    public async Task AddCommentToOrder(int orderId, string comment)
+    {
+        var order = await _context.OrderItems.FindAsync(orderId);
+        if (order != null)
+        {
+            order.OrderComment = comment;
+            await _context.SaveChangesAsync();
+        }
+    }
 }

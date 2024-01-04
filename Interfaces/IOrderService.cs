@@ -12,5 +12,7 @@ public interface IOrderService
     Task PostOrder(Order Order);
     Task PutOrder(int id, Order Order);
     Task DeleteOrder(int id);
+    Task AddCommentToOrder(int orderId, string comment);
+    Task<bool> OrderExists(int id);
 }
 
