@@ -1,10 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+namespace ToTable.Contract;
 
-namespace ToTable.Models;
-
-public class Product
+public class ProductDto
 {
-    [Key] public int ProductId { get; set; }
+    public int ProductId { get; set; }
     public string ProductName { get; set; }
     public string ProductDescription { get; set; }
     public double ProductPrice { get; set; }

@@ -13,57 +13,48 @@ namespace ToTable.Controllers
     [ApiController]
     public class TableController : ControllerBase
     {
-        private readonly ToTableDbContext _context;
+        private readonly ITableService _tableService;
 
-        public TableController(ToTableDbContext context)
+        public TableController(ITableService tableService)
         {
-            _context = context;
+            _tableService = tableService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Table>>> GetTableItems()
+        public async Task<ActionResult<List<Table>>> GetTableItems([FromServices] ITableService _tableService)
         {
-          if (_context.TableItems == null)
-          {
-              return NotFound();
-          }
-            return await _context.TableItems.ToListAsync();
+          return await _tableService.GetTableItems();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Table>> GetTable(int id)
+        public async Task<ActionResult<Table>> GetTable(int id,[FromServices] ITableService _tableService)
         {
-          if (_context.TableItems == null)
-          {
-              return NotFound();
-          }
-            var table = await _context.TableItems.FindAsync(id);
-
+            var table = _tableService.GetTable(id);
+            
             if (table == null)
             {
                 return NotFound();
             }
 
-            return table;
+            return await table;
         }
 
+        
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTable(int id, Table table)
+        public async Task<IActionResult> PutTable(int id, Table table, [FromServices] ITableService _tableService)
         {
             if (id != table.TabId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(table).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _tableService.PutTable(id,table);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TableExists(id))
+                if (_tableService.GetTable(id).IsCanceled)
                 {
                     return NotFound();
                 }
@@ -76,41 +67,19 @@ namespace ToTable.Controllers
             return NoContent();
         }
 
+        
         [HttpPost]
-        public async Task<ActionResult<Table>> PostTable(Table table)
+        public async Task<ActionResult<Table>> PostTable(Table table, [FromServices] ITableService _tableService)
         {
-          if (_context.TableItems == null)
-          {
-              return Problem("Entity set 'ToTableDbContext.TableItems'  is null.");
-          }
-            _context.TableItems.Add(table);
-            await _context.SaveChangesAsync();
-
+            await _tableService.PostTable(table);
             return CreatedAtAction("GetTable", new { id = table.TabId }, table);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTable(int id)
+        public async Task<IActionResult> DeleteTable(int id, [FromServices] ITableService _tableService)
         {
-            if (_context.TableItems == null)
-            {
-                return NotFound();
-            }
-            var table = await _context.TableItems.FindAsync(id);
-            if (table == null)
-            {
-                return NotFound();
-            }
-
-            _context.TableItems.Remove(table);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool TableExists(int id)
-        {
-            return (_context.TableItems?.Any(e => e.TabId == id)).GetValueOrDefault();
+           await _tableService.DeleteTable(id);
+           return NoContent();
         }
     }
 }

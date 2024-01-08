@@ -9,20 +9,31 @@ namespace ToTable.Services;
 public class TableService : ITableService
 {
     private readonly ToTableDbContext _context;
+    private readonly ILogger<TableService> _logger;
 
-    public TableService(ToTableDbContext context)
+
+    public TableService(ToTableDbContext context, ILogger<TableService> logger)
     {
+        _logger = logger;
         _context = context;
     }
 
     public Task<List<Table>> GetTableItems()
     {
-       return  _context.TableItems.ToListAsync();
+        try
+        {
+            return  _context.TableItems.ToListAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e,"Notfound");
+            throw;
+        }
     }
 
-    public Task<Table> GetTable(int id)
+    public async Task<Table> GetTable(int id)
     {
-        var table =_context.TableItems.FirstOrDefaultAsync(x => x.TabId == id);
+        var table = await _context.TableItems.FirstOrDefaultAsync(x => x.TabId == id);
         return table;
     }
 
@@ -35,6 +46,7 @@ public class TableService : ITableService
     public async Task PutTable(int id, Table table)
     {
         _context.Entry(table).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteTable(int id)
@@ -46,5 +58,16 @@ public class TableService : ITableService
             await _context.SaveChangesAsync();
         }
     }
+
+    public Task<bool> TableExists(int id)
+    {
+        return _context.PaymentItems.AnyAsync(x => x.PayId == id);
+    }
     
+    public async Task<int> GetAvailableTableId()
+    {
+        var availableTable = await _context.TableItems
+            .FirstOrDefaultAsync(t => t.TabStatus);
+        return availableTable?.TabId ?? 0; 
+    }
 }
