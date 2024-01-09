@@ -65,7 +65,8 @@ namespace ToTable.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            if (_orderService.GetOrder(id) == null)
+            var order = await _orderService.GetOrder(id);
+            if ( order == null)
             {
                 return NotFound();
             }

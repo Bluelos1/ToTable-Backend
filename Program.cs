@@ -10,7 +10,6 @@ var Configuration = builder.Configuration;
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ToTableDbContext>(opt =>
@@ -20,13 +19,21 @@ builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ITableService, TableService>();
-// builder.Services.AddScoped<WaiterService>();
-// builder.Services.AddScoped<TableService>();
-
+builder.Services.AddScoped<IWaiterService, WaiterService>();
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(120);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -34,11 +41,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-//app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
+// Uncomment to use the global exception handling middleware
+// app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
-
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllers();

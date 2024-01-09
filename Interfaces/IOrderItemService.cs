@@ -12,6 +12,7 @@ public interface IOrderItemService
     Task PostOrderItem(OrderItem OrderItem);
     Task PutOrderItem(int id, OrderItem OrderItem);
     Task DeleteOrderItem(int id);
-    Task AddProductToOrder(OrderItemDto orderItemDto);
+    Task<int> AddProductToOrder(OrderItemDto orderItemDto);
+    Task<List<OrderItem>> GetAllOrderItemsByOrderId(int orderId);
 
 }

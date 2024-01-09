@@ -10,7 +10,7 @@ public class Order
     public int OrderId { get; set; }
     public DateTime OrderTime { get; set; }
     public OrderStatus OrderStatus { get; set; }
-    public string OrderComment { get; set; }
+    public string? OrderComment { get; set; }
     public int WaiterId { get; set; }
     public Waiter Waiter { get; set; } 
     public int PaymentId { get; set; }

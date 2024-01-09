@@ -21,13 +21,13 @@ namespace ToTable.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Table>>> GetTableItems([FromServices] ITableService _tableService)
+        public async Task<ActionResult<List<Table>>> GetTableItems()
         {
           return await _tableService.GetTableItems();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Table>> GetTable(int id,[FromServices] ITableService _tableService)
+        public async Task<ActionResult<Table>> GetTable(int id)
         {
             var table = _tableService.GetTable(id);
             
@@ -41,7 +41,7 @@ namespace ToTable.Controllers
 
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTable(int id, Table table, [FromServices] ITableService _tableService)
+        public async Task<IActionResult> PutTable(int id, Table table)
         {
             if (id != table.TabId)
             {

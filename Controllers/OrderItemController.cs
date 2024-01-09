@@ -68,7 +68,8 @@ namespace ToTable.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteOrder(int id)
         {
-            if (_itemService.GetOrderItem(id) == null)
+            var order = await _itemService.GetOrderItem(id);
+            if ( order == null)
             {
                 return NotFound();
             }
@@ -76,11 +77,18 @@ namespace ToTable.Controllers
             await _itemService.DeleteOrderItem(id);
             return NoContent();
         }
+
+        [HttpGet("AllItems")]
+        public async Task<ActionResult<List<OrderItem>>> GetAllOrderItemsByOrderId(int orderId)
+        {
+            return await _itemService.GetAllOrderItemsByOrderId(orderId);
+            
+        }
         
         [HttpPost("Product to order")]
-        public async Task<ActionResult> AddProductToOrder(OrderItemDto orderItemDto)
+        public async Task<ActionResult<int>> AddProductToOrder(OrderItemDto orderItemDto)
         {
-             await _itemService.AddProductToOrder(orderItemDto);
+             return await _itemService.AddProductToOrder(orderItemDto);
             return CreatedAtAction("GetOrder", new { id = orderItemDto.ProductId }, orderItemDto);
 
         }
