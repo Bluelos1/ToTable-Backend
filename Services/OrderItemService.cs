@@ -3,6 +3,13 @@ using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using ToTable.Contract;
 using ToTable.Interfaces;
 using ToTable.Models;
+using System.Web;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using ToTable.Controllers;
+
 
 namespace ToTable.Services;
 
@@ -11,15 +18,19 @@ public class OrderItemService : IOrderItemService
 {
     
     private readonly ToTableDbContext _context;
-    private readonly TableService _tableService;
-    private readonly WaiterService _waiterService;
+    private readonly ITableService _tableService;
+    private readonly IWaiterService _waiterService;
     private readonly ILogger<OrderItemService> _logger;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private const string CartSessionKey = "CartId";
 
-
-    public OrderItemService(ToTableDbContext context, ILogger<OrderItemService> logger)
+    public OrderItemService(ToTableDbContext context, ITableService tableService, IWaiterService waiterService, ILogger<OrderItemService> logger, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _tableService = tableService;
+        _waiterService = waiterService;
         _logger = logger;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public Task<List<OrderItem>> GetOrderItemItems()
@@ -62,35 +73,60 @@ public class OrderItemService : IOrderItemService
         }
     }
     
-    public async Task AddProductToOrder(OrderItemDto orderItemDto)
+    public async Task<int> AddProductToOrder(OrderItemDto orderItemDto)
     {
         var product = await _context.ProductItems.FindAsync(orderItemDto.ProductId);
-        var order = await _context.OrderItems.FirstOrDefaultAsync(x => x.OrderId == orderItemDto.OrderItemId);
-        if (order != null)
+        var order = await _context.OrderItems.FirstOrDefaultAsync(x => x.OrderId== orderItemDto.OrderItemId);
+        var waiterId = await _waiterService.GetAvailableWaiterId();
+        var tableId = await _tableService.GetAvailableTableId();
+        if (order == null)
         {
-            new Order
+           order = new Order
             {
                 OrderTime = DateTime.Now,
                 OrderStatus = OrderStatus.New,
                 OrderComment = null,
-                WaiterId = await _waiterService.GetAvailableWaiterId(),
-                TableId = await _tableService.GetAvailableTableId(),
+                WaiterId = waiterId,
+                TableId = tableId,
                 PaymentId = 0,
             };
+            var waiter = await _context.WaiterItems.FindAsync(waiterId);
+            if (waiter != null)
+            {
+                waiter.IsAvailable = false;
+            }
+            var table = await _context.TableItems.FindAsync(tableId);
+            if (table != null)
+            {
+                table.TabStatus = false;
+            }
+            
             _context.OrderItems.Add(order);
             await _context.SaveChangesAsync(); 
         }
-        
         var orderItem = new OrderItem
         {
-            OrderId = order?.OrderId,
+            OrderId = order.OrderId,
             ProductId = product.ProductId,
             ItemQuantity = orderItemDto.ItemQuantity,
-            ItemPrice = product.ProductPrice * orderItemDto.ItemQuantity
+            ItemPrice = product.ProductPrice * orderItemDto.ItemQuantity,
+            Product = product
         };
         _context.OrderItemItems.Add(orderItem);
         await _context.SaveChangesAsync();
+        return order.OrderId;
 
+    }
+    
+    
+
+    public async Task<List<OrderItem>> GetAllOrderItemsByOrderId(int orderId)
+    {
+        var orderitems = await _context
+            .OrderItemItems.Where(x=>x.OrderId == orderId)
+            .Include(x => x.Product)
+            .ToListAsync();
+        return orderitems;
     }
 
     public Task<bool> OrderItemExists(int id)
