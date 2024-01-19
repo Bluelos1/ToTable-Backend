@@ -7,6 +7,8 @@ using ToTable.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var Configuration = builder.Configuration;
+var allowedOrigin = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -33,6 +35,16 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("myAppCors", policy =>
+    {
+        policy.WithOrigins(allowedOrigin)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -47,6 +59,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseSession();
+app.UseCors("myAppCors");
 app.UseAuthorization();
 
 app.MapControllers();

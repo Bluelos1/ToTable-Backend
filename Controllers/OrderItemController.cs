@@ -85,7 +85,7 @@ namespace ToTable.Controllers
             
         }
         
-        [HttpPost("Product to order")]
+        [HttpPost("ProductToOrder")]
         public async Task<ActionResult<int>> AddProductToOrder(OrderItemDto orderItemDto)
         {
              return await _itemService.AddProductToOrder(orderItemDto);
