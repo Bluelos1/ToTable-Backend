@@ -16,5 +16,6 @@ public interface IOrderService
     Task AddCommentToOrder(int orderId, string comment);
     Task<bool> OrderExists(int id);
     Task<List<OrderItem>> GetOrderItemsById(int orderId);
+    Task<decimal> GetOrderPrice(int id);
 }
 

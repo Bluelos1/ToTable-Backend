@@ -93,4 +93,11 @@ public Task<List<OrderItem>> GetOrderItemsById(int orderId)
         throw new NotImplementedException();
     }
 
+    public async Task<decimal> GetOrderPrice(int id)
+    { 
+        var orderItems = await GetOrderItemsById(id);
+        decimal orderPrice = orderItems.Sum(item => (decimal)item.ItemPrice);
+        return orderPrice;
+    }
+
 }
