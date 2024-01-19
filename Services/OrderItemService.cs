@@ -76,12 +76,11 @@ public class OrderItemService : IOrderItemService
     public async Task<int> AddProductToOrder(OrderItemDto orderItemDto)
     {
         var product = await _context.ProductItems.FindAsync(orderItemDto.ProductId);
-        var order = await _context.OrderItems.FirstOrDefaultAsync(x => x.OrderId== orderItemDto.OrderItemId);
+        var order = await _context.OrderItems.FirstOrDefaultAsync(x => x.OrderId== orderItemDto.OrderItemId); 
         var waiterId = await _waiterService.GetAvailableWaiterId();
         var tableId = await _tableService.GetAvailableTableId();
-        if (order == null)
-        {
-           order = new Order
+           
+        order ??= new Order
             {
                 OrderTime = DateTime.Now,
                 OrderStatus = OrderStatus.New,
@@ -89,21 +88,20 @@ public class OrderItemService : IOrderItemService
                 WaiterId = waiterId,
                 TableId = tableId,
                 PaymentId = 0,
-            };
-            var waiter = await _context.WaiterItems.FindAsync(waiterId);
+            }; 
+        var waiter = await _context.WaiterItems.FindAsync(waiterId);
             if (waiter != null)
             {
                 waiter.IsAvailable = false;
-            }
+            } 
             var table = await _context.TableItems.FindAsync(tableId);
             if (table != null)
             {
                 table.TabStatus = false;
             }
-            
             _context.OrderItems.Add(order);
-            await _context.SaveChangesAsync(); 
-        }
+            await _context.SaveChangesAsync();
+            
         var orderItem = new OrderItem
         {
             OrderId = order.OrderId,
@@ -115,7 +113,6 @@ public class OrderItemService : IOrderItemService
         _context.OrderItemItems.Add(orderItem);
         await _context.SaveChangesAsync();
         return order.OrderId;
-
     }
     
     
