@@ -1,14 +1,15 @@
-
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ToTable.Models;
 
-namespace ToTable.Interfaces;
-
-
-public interface IPaymentService
+namespace ToTable.Interfaces
 {
-    Task<List<Payment>> GetPaymentItems();
-    Task<Payment> GetPayment(int id);
-    Task PostPayment(Payment payment);
-    Task PutPayment(int id, Payment payment);
-    Task DeletePayment(int id);
+    public interface IPaymentService
+    {
+        Task<List<Payment>> GetPaymentItems();
+        Task<Payment> GetPayment(int id);
+        Task PostPayment(Payment payment);
+        Task PutPayment(int id, Payment payment);
+        Task DeletePayment(int id);
+    }
 }

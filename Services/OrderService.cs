@@ -28,6 +28,9 @@ public class OrderService : IOrderService
         }
     }
 
+    
+
+
     public Task<Order> GetOrder(int id)
     {
         return _context.OrderItems.FirstOrDefaultAsync(x => x.OrderId == id);
@@ -55,7 +58,7 @@ public class OrderService : IOrderService
         }
     }
 
-    public Task<bool> OrderExists( int id)
+    public Task<bool> OrderExists(int id)
     {
         return _context.OrderItems.AnyAsync(x => x.OrderId == id);
     }
@@ -69,4 +72,32 @@ public class OrderService : IOrderService
             await _context.SaveChangesAsync();
         }
     }
+
+public Task<List<OrderItem>> GetOrderItemsById(int orderId)
+{
+    try
+    {
+        return _context.OrderItemItems
+            .Where(item => item.OrderId == orderId)
+            .ToListAsync();
+    }
+    catch (Exception e)
+    {
+        _logger.LogError(e, $"Error occurred while fetching items for order {orderId}.");
+        throw;
+    }
+}
+
+    public Task<List<OrderItem>> GetOrderItemsByOrderId(int orderId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<decimal> GetOrderPrice(int id)
+    { 
+        var orderItems = await GetOrderItemsById(id);
+        decimal orderPrice = orderItems.Sum(item => (decimal)item.ItemPrice);
+        return orderPrice;
+    }
+
 }

@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ToTable.Controllers;
+using ToTable.Interfaces;
 using ToTable.Models;
 
 namespace ToTable.Services;
@@ -37,11 +38,11 @@ public class TableService : ITableService
         return table;
     }
 
-    public async Task PostTable(Table table)
-    {
-         _context.TableItems.Add(table);
-         await _context.SaveChangesAsync();
-    }
+        public async Task PostTable(Table table)
+        {
+            _context.TableItems.Add(table);
+            await _context.SaveChangesAsync();
+        }
 
     public async Task PutTable(int id, Table table)
     {

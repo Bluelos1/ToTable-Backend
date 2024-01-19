@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.Http.Headers;
-using Microsoft.EntityFrameworkCore;
 
 namespace ToTable.Models;
 

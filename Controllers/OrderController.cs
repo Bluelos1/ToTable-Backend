@@ -16,31 +16,33 @@ namespace ToTable.Controllers
     {
         private readonly IOrderService _orderService;
 
-        public OrderController( IOrderService orderService)
+        public OrderController(IOrderService orderService)
         {
             _orderService = orderService;
         }
 
-        
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrderItems()
         {
             var order = _orderService.GetOrderItems();
-          if (order == null)
-          {
-              return NotFound();
-          }
-            return await order ;
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            return await order;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
-          if (_orderService.GetOrder(id) == null)
-          {
-              return NotFound();
-          }
-          return await _orderService.GetOrder(id);
+            if (_orderService.GetOrder(id) == null)
+            {
+                return NotFound();
+            }
+
+            return await _orderService.GetOrder(id);
         }
 
         [HttpPut("{id}")]
@@ -59,14 +61,16 @@ namespace ToTable.Controllers
         public async Task<ActionResult<Order>> PostOrder(Order order)
         {
             await _orderService.PostOrder(order);
-            return CreatedAtAction("GetOrder", new { id = order.OrderId }, order);
+            return CreatedAtAction("GetOrder", new
+            {
+                id = order.OrderId
+            }, order);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            var order = await _orderService.GetOrder(id);
-            if ( order == null)
+            if (_orderService.GetOrder(id) == null)
             {
                 return NotFound();
             }
@@ -86,5 +90,29 @@ namespace ToTable.Controllers
 
             return Ok();
         }
+
+        [HttpGet("{id}/GetOrderPrice")]
+        public async Task<ActionResult<decimal>> GetOrderPrice(int id)
+        {
+            var order = await _orderService.GetOrder(id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+
+            var orderItems = await _orderService.GetOrderItemsById(id);
+
+            if (orderItems is null || !orderItems.Any())
+            {
+
+                return NotFound("No OrderItems found for the given order.");
+            }
+
+            return Ok(_orderService.GetOrderPrice(id));
+        }
+
     }
 }
+
