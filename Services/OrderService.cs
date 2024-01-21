@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ToTable.Contract;
 using ToTable.Interfaces;
 using ToTable.Models;
 
@@ -42,7 +43,7 @@ public class OrderService : IOrderService
         return _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId == id);
     }
 
-    public async Task<int> PostOrder(Order order)
+    public async Task<int> PostOrder(OrderDto order)
     {
         var waiterId = await _waiterService.GetAvailableWaiterId();
            
@@ -51,6 +52,7 @@ public class OrderService : IOrderService
             OrderTime = DateTime.Now,
             OrderStatus = OrderStatus.New,
             OrderComment = null,
+            PaymentMethod = order.PaymentMethod,
             WaiterId = waiterId,
             TableId = order.TableId,
             RestaurantId = order.RestaurantId
@@ -66,7 +68,7 @@ public class OrderService : IOrderService
         return order.OrderId;
     }
 
-    public async Task PutOrder(int id, Order order)
+    public async Task PutOrder(int id, OrderDto order)
     {
         var orderById = _context.OrderObject.FirstOrDefault(x => x.OrderId == id);
 

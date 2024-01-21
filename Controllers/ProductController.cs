@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ToTable.Contract;
 using ToTable.Interfaces;
 using ToTable.Models;
 
@@ -45,7 +46,7 @@ namespace ToTable.Controllers
 
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, Product product)
+        public async Task<IActionResult> PutProduct(int id, ProductDto product)
         {
             if (id != product.ProductId)
             {
@@ -58,7 +59,7 @@ namespace ToTable.Controllers
 
         
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
+        public async Task<ActionResult<Product>> PostProduct(ProductDto product)
         {
             await _productService.PostProduct(product);
             return CreatedAtAction("GetProduct", new { id = product.ProductId }, product);

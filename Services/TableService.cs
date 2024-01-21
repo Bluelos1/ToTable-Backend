@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ToTable.Contract;
 using ToTable.Controllers;
 using ToTable.Interfaces;
 using ToTable.Models;
@@ -38,7 +39,7 @@ public class TableService : ITableService
         return table;
     }
 
-        public async Task PostTable(Table table)
+        public async Task PostTable(TableDto table)
         {
             var tableItem = new Table
             {
@@ -50,7 +51,7 @@ public class TableService : ITableService
             await _context.SaveChangesAsync();
         }
 
-    public async Task PutTable(int id, Table table)
+    public async Task PutTable(int id, TableDto table)
     {
         _context.Entry(table).State = EntityState.Modified;
         await _context.SaveChangesAsync();

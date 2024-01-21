@@ -47,7 +47,7 @@ namespace ToTable.Controllers
 
        
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutOrder(int id, OrderItem orderItem)
+        public async Task<ActionResult> PutOrder(int id, OrderItemDto orderItem)
         {
             if (id != orderItem.ItemId)
             {

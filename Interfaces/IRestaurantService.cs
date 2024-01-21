@@ -1,3 +1,4 @@
+using ToTable.Contract;
 using ToTable.Models;
 
 namespace ToTable.Interfaces;
@@ -6,7 +7,7 @@ public interface IRestaurantService
 {
     Task<List<Restaurant>> GetRestaurantObject();
     Task<Restaurant> GetRestaurant(int id);
-    Task PostRestaurant(Restaurant Restaurant);
-    Task PutRestaurant(int id, Restaurant Restaurant);
+    Task PostRestaurant(RestaurantDto Restaurant);
+    Task PutRestaurant(int id, RestaurantDto Restaurant);
     Task DeleteRestaurant(int id);
 }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ToTable.Contract;
 using ToTable.Interfaces;
 using ToTable.Models;
 
@@ -34,7 +35,7 @@ public class RestaurantService : IRestaurantService
         return _context.RestaurantObject.FirstOrDefaultAsync(x => x.RestaurantId == id);
     }
 
-    public async Task PostRestaurant(Restaurant restaurant)
+    public async Task PostRestaurant(RestaurantDto restaurant)
     {
         var restaurantItem = new Restaurant
         {
@@ -49,7 +50,7 @@ public class RestaurantService : IRestaurantService
         await _context.SaveChangesAsync();
     }
 
-    public async Task PutRestaurant(int id, Restaurant Restaurant)
+    public async Task PutRestaurant(int id, RestaurantDto Restaurant)
     {
         _context.Entry(Restaurant).State = EntityState.Modified;
         await _context.SaveChangesAsync();    }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ToTable.Contract;
 using ToTable.Controllers;
 using ToTable.Interfaces;
 using ToTable.Models;
@@ -36,7 +37,7 @@ public class ProductService : IProductService
         return _context.ProductObject.FirstOrDefaultAsync(x => x.ProductId == id);
     }
 
-    public async Task PostProduct(Product product)
+    public async Task PostProduct(ProductDto product)
     {
 
         var productItem = new Product
@@ -52,7 +53,7 @@ public class ProductService : IProductService
         await _context.SaveChangesAsync();
     }
 
-    public async Task PutProduct(int id, Product Product)
+    public async Task PutProduct(int id, ProductDto Product)
     {
         _context.Entry(Product).State = EntityState.Modified;
         await _context.SaveChangesAsync();    }

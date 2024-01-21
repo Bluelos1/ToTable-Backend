@@ -53,7 +53,7 @@ public class OrderItemService : IOrderItemService
         await _context.SaveChangesAsync();
     }
 
-    public async Task PutOrderItem(int id, OrderItem OrderItem)
+    public async Task PutOrderItem(int id, OrderItemDto OrderItem)
     {
         _context.Entry(OrderItem).State = EntityState.Modified;
         await _context.SaveChangesAsync();
@@ -72,16 +72,15 @@ public class OrderItemService : IOrderItemService
     public async Task AddProductToOrder(OrderItemDto orderItemDto)
     {
         var product = await _context.ProductObject.FindAsync(orderItemDto.ProductId);
-        var order = await _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId== orderItemDto.OrderItemId); 
+        var order = await _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId== orderItemDto.ItemId); 
         
             
-        var orderItem = new OrderItem
+        var orderItem = new OrderItem()
         {
             OrderId = order.OrderId,
             ProductId = product.ProductId,
             ItemQuantity = orderItemDto.ItemQuantity,
             ItemPrice = product.ProductPrice * orderItemDto.ItemQuantity,
-            Product = product
         };
         _context.OrderItemObject.Add(orderItem);
         await _context.SaveChangesAsync();

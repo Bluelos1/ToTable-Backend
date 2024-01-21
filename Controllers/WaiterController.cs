@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ToTable.Contract;
 using ToTable.Interfaces;
 using ToTable.Models;
 
@@ -47,7 +48,7 @@ namespace ToTable.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutWaiter(int id, Waiter waiter)
+        public async Task<IActionResult> PutWaiter(int id, WaiterDto waiter)
         {
             if (id != waiter.WaiterId)
             {
@@ -59,7 +60,7 @@ namespace ToTable.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Waiter>> PostWaiter(Waiter waiter)
+        public async Task<ActionResult<Waiter>> PostWaiter(WaiterDto waiter)
         {
             await _waiterService.PostWaiter(waiter);
             return CreatedAtAction("GetWaiter", new { id = waiter.WaiterId }, waiter);
