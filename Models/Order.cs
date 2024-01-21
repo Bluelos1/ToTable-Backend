@@ -12,7 +12,7 @@ public class Order
     public OrderStatus OrderStatus { get; set; }
     public string? OrderComment { get; set; }
     public string? PaymentMethod { get; set; }
-    public int WaiterId { get; set; }
+    public int? WaiterId { get; set; }
     public Waiter? Waiter { get; set; } 
     public int TableId { get; set; }
     public Table? Table { get; set; }

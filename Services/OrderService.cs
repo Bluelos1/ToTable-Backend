@@ -46,6 +46,7 @@ public class OrderService : IOrderService
     public async Task<int> PostOrder(OrderDto order)
     {
         var waiterId = await _waiterService.GetAvailableWaiterId();
+        
            
         var orderItem = new Order
         {
@@ -53,18 +54,14 @@ public class OrderService : IOrderService
             OrderStatus = OrderStatus.New,
             OrderComment = null,
             PaymentMethod = order.PaymentMethod,
-            WaiterId = waiterId,
+            WaiterId = order.WaiterId,
             TableId = order.TableId,
             RestaurantId = order.RestaurantId
         }; 
-        var waiter = await _context.WaiterObject.FindAsync(waiterId);
-        if (waiter != null)
-        {
-            waiter.IsAvailable = false;
-        } 
         
         _context.OrderObject.Add(orderItem);
         await _context.SaveChangesAsync();
+        order.OrderId = orderItem.OrderId;
         return order.OrderId;
     }
 
