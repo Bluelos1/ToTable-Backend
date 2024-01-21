@@ -4,6 +4,8 @@ using ToTable.Models;
 
 namespace ToTable.Controllers;
 
+[Route("api/[controller]")]
+
 public class RestaurantController:ControllerBase
 {
     private readonly IRestaurantService _RestaurantService;
