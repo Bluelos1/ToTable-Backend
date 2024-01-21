@@ -25,7 +25,7 @@ namespace ToTable.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Waiter>>> GetWaiter()
         {
-            var waiter = _waiterService.GetWaiterItems();
+            var waiter = _waiterService.GetWaiterObject();
             if (waiter == null)
             {
                 return NotFound();

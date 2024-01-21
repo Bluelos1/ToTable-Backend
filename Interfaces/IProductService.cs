@@ -6,7 +6,7 @@ namespace ToTable.Interfaces
 {
     public interface IProductService
     {
-        Task<List<Product>> GetProductItems();
+        Task<List<Product>> GetProductObject();
         Task<Product> GetProduct(int id);
         Task PostProduct(Product product);
         Task PutProduct(int id, Product product);

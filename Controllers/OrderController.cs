@@ -23,7 +23,7 @@ namespace ToTable.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrderItems()
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrderObject()
         {
             var order = _orderService.GetOrderItems();
             if (order == null)
@@ -99,15 +99,6 @@ namespace ToTable.Controllers
             if (order == null)
             {
                 return NotFound();
-            }
-
-
-            var orderItems = await _orderService.GetOrderItemsById(id);
-
-            if (orderItems is null || !orderItems.Any())
-            {
-
-                return NotFound("No OrderItems found for the given order.");
             }
 
             return Ok(_orderService.GetOrderPrice(id));

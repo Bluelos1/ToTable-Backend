@@ -7,16 +7,16 @@ namespace ToTable.Services;
 public class WaiterService : IWaiterService
 {
     private readonly ToTableDbContext _context;
-    private readonly ILogger<PaymentService> _logger;
+    private readonly ILogger<WaiterService> _logger;
 
-    public WaiterService(ToTableDbContext context, ILogger<PaymentService> logger)
+    public WaiterService(ToTableDbContext context, ILogger<WaiterService> logger)
     {
         _context = context;
         _logger = logger;
     }
-    public Task<List<Waiter>> GetWaiterItems()
+    public Task<List<Waiter>> GetWaiterObject()
     {
-        return _context.WaiterItems.ToListAsync();   
+        return _context.WaiterObject.ToListAsync();   
     }
 
 
@@ -24,14 +24,24 @@ public class WaiterService : IWaiterService
 
     public async Task<Waiter> GetWaiter(int id)
     {
-        var waiter = await _context.WaiterItems.FirstOrDefaultAsync(x => x.WaiterId == id);
+        var waiter = await _context.WaiterObject.FirstOrDefaultAsync(x => x.WaiterId == id);
         return waiter;
     }
 
 
     public async Task PostWaiter(Waiter waiter)
     {
-        _context.WaiterItems.Add(waiter);
+        var waiterItem = new Waiter
+        {
+            WaiterName = waiter.WaiterName,
+            WaiterSurname = waiter.WaiterSurname,
+            WaiterLogin = waiter.WaiterLogin,
+            WaiterPassw = waiter.WaiterPassw,
+            IsAvailable = true,
+            RestaurantId = waiter.RestaurantId
+        };
+
+    _context.WaiterObject.Add(waiterItem);
         await _context.SaveChangesAsync();
     }
 
@@ -43,17 +53,17 @@ public class WaiterService : IWaiterService
 
     public async Task DeleteWaiter(int id)
     {
-        var waiter = await _context.WaiterItems.FindAsync(id);
+        var waiter = await _context.WaiterObject.FindAsync(id);
         if (waiter != null)
         {
-            _context.WaiterItems.Remove(waiter);
+            _context.WaiterObject.Remove(waiter);
             await _context.SaveChangesAsync();
         }
     }
     
     public async Task<int> GetAvailableWaiterId()
     {
-        var availableWaiter = await _context.WaiterItems
+        var availableWaiter = await _context.WaiterObject
             .FirstOrDefaultAsync(w => w.IsAvailable);
         return availableWaiter?.WaiterId ?? 0;
     }

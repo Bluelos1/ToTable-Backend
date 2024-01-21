@@ -21,9 +21,9 @@ namespace ToTable.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Table>>> GetTableItems()
+        public async Task<ActionResult<List<Table>>> GetTableObject()
         {
-          return await _tableService.GetTableItems();
+          return await _tableService.GetTableObject();
         }
 
         [HttpGet("{id}")]

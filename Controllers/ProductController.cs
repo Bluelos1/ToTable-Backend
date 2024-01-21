@@ -22,14 +22,14 @@ namespace ToTable.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProductItems()
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductObject()
         { 
-            var productItems = _productService.GetProductItems();
-          if (productItems== null)
+            var productObject = _productService.GetProductObject();
+          if (productObject== null)
           {
               return NotFound();
           }
-            return await productItems;
+            return await productObject;
         }
 
         [HttpGet("{id}")]
