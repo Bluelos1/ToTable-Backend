@@ -59,7 +59,7 @@ namespace ToTable.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(OrderDto order)
+        public async Task<ActionResult<int>> PostOrder(OrderDto order)
         {
             await _orderService.PostOrder(order);
             return CreatedAtAction("GetOrder", new

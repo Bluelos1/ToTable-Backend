@@ -19,14 +19,11 @@ public class OrderItemService : IOrderItemService
     
     private readonly ToTableDbContext _context;
     private readonly ILogger<OrderItemService> _logger;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private const string CartSessionKey = "CartId";
 
-    public OrderItemService(ToTableDbContext context, ILogger<OrderItemService> logger, IHttpContextAccessor httpContextAccessor)
+    public OrderItemService(ToTableDbContext context, ILogger<OrderItemService> logger)
     {
         _context = context;
         _logger = logger;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     public Task<List<OrderItem>> GetOrderItemObject()
