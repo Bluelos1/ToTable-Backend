@@ -7,12 +7,13 @@ namespace ToTable.Models
         public ToTableDbContext(DbContextOptions<ToTableDbContext> options)
             : base(options) { }
 
-        public DbSet<Order> OrderItems { get; set; } = null!;
-        public DbSet<OrderItem> OrderItemItems { get; set; } = null!;
-        public DbSet<Payment> PaymentItems { get; set; } = null!;
-        public DbSet<Product> ProductItems { get; set; } = null!;
-        public DbSet<Table> TableItems { get; set; } = null!;
-        public DbSet<Waiter> WaiterItems { get; set; } = null!;
+        public DbSet<Order> OrderObject { get; set; } = null!;
+        public DbSet<OrderItem> OrderItemObject { get; set; } = null!;
+        public DbSet<Product> ProductObject { get; set; } = null!;
+        public DbSet<Table> TableObject { get; set; } = null!;
+        public DbSet<Waiter> WaiterObject { get; set; } = null!;
+        public DbSet<Restaurant> RestaurantObject { get; set; } = null!;
+
 
     }
 }

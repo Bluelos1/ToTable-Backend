@@ -5,7 +5,7 @@ namespace ToTable.Interfaces;
 
     public interface IWaiterService
     {
-        Task<List<Waiter>> GetWaiterItems();
+        Task<List<Waiter>> GetWaiterObject();
         Task<Waiter> GetWaiter(int id);
         Task PostWaiter(Waiter waiter);
         Task PutWaiter(int id, Waiter waiter);

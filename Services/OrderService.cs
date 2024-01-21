@@ -9,17 +9,20 @@ public class OrderService : IOrderService
 {
     private readonly ToTableDbContext _context;
     private readonly ILogger<OrderService> _logger;
-    public OrderService(ToTableDbContext context, ILogger<OrderService> logger )
+    private readonly IWaiterService _waiterService;
+
+    public OrderService(ToTableDbContext context, ILogger<OrderService> logger, IWaiterService waiterService)
     {
         _context = context;
         _logger = logger;
+        _waiterService = waiterService;
     }
 
-    public Task<List<Order>> GetOrderItems()
+    public Task<List<Order>> GetOrderObject()
     {
         try
         {
-            return _context.OrderItems.ToListAsync();
+            return _context.OrderObject.ToListAsync();
         }
         catch (Exception e)
         {
@@ -28,44 +31,73 @@ public class OrderService : IOrderService
         }
     }
 
-    
 
+    public Task<List<Order>> GetOrderItems()
+    {
+        throw new NotImplementedException();
+    }
 
     public Task<Order> GetOrder(int id)
     {
-        return _context.OrderItems.FirstOrDefaultAsync(x => x.OrderId == id);
+        return _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId == id);
     }
 
-    public async Task PostOrder(Order Order)
+    public async Task<int> PostOrder(Order order)
     {
-        _context.OrderItems.Add(Order);
+        var waiterId = await _waiterService.GetAvailableWaiterId();
+           
+        var orderItem = new Order
+        {
+            OrderTime = DateTime.Now,
+            OrderStatus = OrderStatus.New,
+            OrderComment = null,
+            WaiterId = waiterId,
+            TableId = order.TableId,
+            RestaurantId = order.RestaurantId
+        }; 
+        var waiter = await _context.WaiterObject.FindAsync(waiterId);
+        if (waiter != null)
+        {
+            waiter.IsAvailable = false;
+        } 
+        
+        _context.OrderObject.Add(orderItem);
         await _context.SaveChangesAsync();
+        return order.OrderId;
     }
 
-    public async Task PutOrder(int id, Order Order)
+    public async Task PutOrder(int id, Order order)
     {
-        _context.Entry(Order).State = EntityState.Modified;
+        var orderById = _context.OrderObject.FirstOrDefault(x => x.OrderId == id);
+
+        orderById.OrderTime = DateTime.Now;
+        orderById.OrderStatus = OrderStatus.New;
+        orderById.OrderComment = null;
+        orderById.WaiterId = order.WaiterId;
+        orderById.TableId = order.TableId;
+        orderById.RestaurantId = order.RestaurantId;
+        
         await _context.SaveChangesAsync();
     }
 
     public async Task DeleteOrder(int id)
     {
-        var item = await _context.OrderItems.FindAsync(id);
+        var item = await _context.OrderObject.FindAsync(id);
         if (item != null)
         {
-            _context.OrderItems.Remove(item);
+            _context.OrderObject.Remove(item);
             await _context.SaveChangesAsync();
         }
     }
 
     public Task<bool> OrderExists(int id)
     {
-        return _context.OrderItems.AnyAsync(x => x.OrderId == id);
+        return _context.OrderObject.AnyAsync(x => x.OrderId == id);
     }
     
     public async Task AddCommentToOrder(int orderId, string comment)
     {
-        var order = await _context.OrderItems.FindAsync(orderId);
+        var order = await _context.OrderObject.FindAsync(orderId);
         if (order != null)
         {
             order.OrderComment = comment;
@@ -73,30 +105,26 @@ public class OrderService : IOrderService
         }
     }
 
-public Task<List<OrderItem>> GetOrderItemsById(int orderId)
+public Task<List<OrderItem>> GetOrderObjectById(int orderId)
 {
     try
     {
-        return _context.OrderItemItems
+        return _context.OrderItemObject
             .Where(item => item.OrderId == orderId)
             .ToListAsync();
     }
     catch (Exception e)
     {
-        _logger.LogError(e, $"Error occurred while fetching items for order {orderId}.");
+        _logger.LogError(e, $"Error occurred while fetching Object for order {orderId}.");
         throw;
     }
 }
 
-    public Task<List<OrderItem>> GetOrderItemsByOrderId(int orderId)
-    {
-        throw new NotImplementedException();
-    }
 
     public async Task<decimal> GetOrderPrice(int id)
     { 
-        var orderItems = await GetOrderItemsById(id);
-        decimal orderPrice = orderItems.Sum(item => (decimal)item.ItemPrice);
+        var orderObject = await GetOrderObjectById(id);
+        decimal orderPrice = orderObject.Sum(item => (decimal)item.ItemPrice);
         return orderPrice;
     }
 

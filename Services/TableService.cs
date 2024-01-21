@@ -19,11 +19,11 @@ public class TableService : ITableService
         _context = context;
     }
 
-    public Task<List<Table>> GetTableItems()
+    public Task<List<Table>> GetTableObject()
     {
         try
         {
-            return  _context.TableItems.ToListAsync();
+            return  _context.TableObject.ToListAsync();
         }
         catch (Exception e)
         {
@@ -34,13 +34,19 @@ public class TableService : ITableService
 
     public async Task<Table> GetTable(int id)
     {
-        var table = await _context.TableItems.FirstOrDefaultAsync(x => x.TabId == id);
+        var table = await _context.TableObject.FirstOrDefaultAsync(x => x.TabId == id);
         return table;
     }
 
         public async Task PostTable(Table table)
         {
-            _context.TableItems.Add(table);
+            var tableItem = new Table
+            {
+                TabNum = table.TabNum,
+                TabStatus = table.TabStatus,
+                RestaurantId = table.RestaurantId
+            };
+            _context.TableObject.Add(tableItem);
             await _context.SaveChangesAsync();
         }
 
@@ -52,22 +58,22 @@ public class TableService : ITableService
 
     public async Task DeleteTable(int id)
     {
-        var table = await _context.TableItems.FindAsync(id);
+        var table = await _context.TableObject.FindAsync(id);
         if (table != null)
         {
-            _context.TableItems.Remove(table);
+            _context.TableObject.Remove(table);
             await _context.SaveChangesAsync();
         }
     }
 
     public Task<bool> TableExists(int id)
     {
-        return _context.PaymentItems.AnyAsync(x => x.PayId == id);
+        return null;
     }
     
     public async Task<int> GetAvailableTableId()
     {
-        var availableTable = await _context.TableItems
+        var availableTable = await _context.TableObject
             .FirstOrDefaultAsync(t => t.TabStatus);
         return availableTable?.TabId ?? 0; 
     }

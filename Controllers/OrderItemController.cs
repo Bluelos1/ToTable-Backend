@@ -24,9 +24,9 @@ namespace ToTable.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<OrderItem>>> GetOrderItems()
+        public async Task<ActionResult<List<OrderItem>>> GetOrderObject()
         {
-            var orderItem = _itemService.GetOrderItemItems();
+            var orderItem = _itemService.GetOrderItemObject();
           if (orderItem == null)
           {
               return NotFound();
@@ -79,18 +79,17 @@ namespace ToTable.Controllers
         }
 
         [HttpGet("AllItems")]
-        public async Task<ActionResult<List<OrderItem>>> GetAllOrderItemsByOrderId(int orderId)
+        public async Task<ActionResult<List<OrderItem>>> GetAllOrderObjectByOrderId(int orderId)
         {
-            return await _itemService.GetAllOrderItemsByOrderId(orderId);
+            return await _itemService.GetAllOrderObjectByOrderId(orderId);
             
         }
         
         [HttpPost("ProductToOrder")]
         public async Task<ActionResult<int>> AddProductToOrder(OrderItemDto orderItemDto)
         {
-             return await _itemService.AddProductToOrder(orderItemDto);
+            await _itemService.AddProductToOrder(orderItemDto);
             return CreatedAtAction("GetOrder", new { id = orderItemDto.ProductId }, orderItemDto);
-
         }
 
        

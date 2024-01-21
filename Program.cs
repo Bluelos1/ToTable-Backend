@@ -19,7 +19,7 @@ builder.Services.AddDbContext<ToTableDbContext>(opt =>
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<ITableService, TableService>();
 builder.Services.AddScoped<IWaiterService, WaiterService>();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
