@@ -9,7 +9,7 @@ namespace ToTable.Interfaces;
 
 public interface IOrderService
 {
-    Task<List<Order>> GetOrderItems();
+    Task<List<Order>> GetOrderObject();
     Task<Order> GetOrder(int id);
     Task<int> PostOrder(OrderDto Order);
     Task PutOrder(int id, OrderDto Order);
