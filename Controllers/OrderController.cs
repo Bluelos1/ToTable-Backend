@@ -38,7 +38,8 @@ namespace ToTable.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
-            if (_orderService.GetOrder(id) == null)
+            var item = await _orderService.GetOrder(id);
+            if (item == null)
             {
                 return NotFound();
             }
