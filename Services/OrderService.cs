@@ -31,12 +31,7 @@ public class OrderService : IOrderService
             throw;
         }
     }
-
-
-    public Task<List<Order>> GetOrderItems()
-    {
-        throw new NotImplementedException();
-    }
+    
 
     public Task<Order> GetOrder(int id)
     {
@@ -90,14 +85,14 @@ public class OrderService : IOrderService
         }
     }
 
-    public Task<bool> OrderExists(int id)
+    public async Task<bool> OrderExists(int id)
     {
-        return _context.OrderObject.AnyAsync(x => x.OrderId == id);
+        return _context.OrderObject.Any(x => x.OrderId == id);
     }
     
     public async Task AddCommentToOrder(int orderId, string comment)
     {
-        var order = await _context.OrderObject.FindAsync(orderId);
+        var order =  _context.OrderObject.Find(orderId);
         if (order != null)
         {
             order.OrderComment = comment;
