@@ -70,7 +70,7 @@ public class OrderService : IOrderService
         var orderById = _context.OrderObject.FirstOrDefault(x => x.OrderId == id);
 
         orderById.OrderTime = DateTime.Now;
-        orderById.OrderStatus = OrderStatus.New;
+        orderById.OrderStatus = order.OrderStatus;
         orderById.OrderComment = null;
         orderById.WaiterId = order.WaiterId;
         orderById.TableId = order.TableId;
