@@ -9,4 +9,5 @@ public interface IRestaurantService
     Task PostRestaurant(Restaurant Restaurant);
     Task PutRestaurant(int id, Restaurant Restaurant);
     Task DeleteRestaurant(int id);
+    Task<Restaurant> GetRestaurantByCredentials(string login, string password);
 }

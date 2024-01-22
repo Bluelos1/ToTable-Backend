@@ -4,6 +4,8 @@ using ToTable.Models;
 
 namespace ToTable.Controllers;
 
+   [Route("api/[controller]")]
+   [ApiController]
 public class RestaurantController:ControllerBase
 {
     private readonly IRestaurantService _RestaurantService;
@@ -66,5 +68,17 @@ public class RestaurantController:ControllerBase
     
                 await _RestaurantService.DeleteRestaurant(id);
                 return NoContent();
+            }
+
+
+            [HttpGet("login/{login}/{password}")]
+            public async Task<ActionResult<Restaurant>> GetRestaurantByCredentials(string login, string password)
+            {
+                var restaurant = await _RestaurantService.GetRestaurantByCredentials(login, password);
+                if (restaurant == null)
+                {
+                    return NotFound();
+                }
+                return restaurant;
             }
 }

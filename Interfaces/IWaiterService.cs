@@ -11,4 +11,5 @@ namespace ToTable.Interfaces;
         Task PutWaiter(int id, Waiter waiter);
         Task DeleteWaiter(int id);
         Task<int> GetAvailableWaiterId();
+        Task<Waiter> GetWaiterByCredentials(string login, string password);
     }
