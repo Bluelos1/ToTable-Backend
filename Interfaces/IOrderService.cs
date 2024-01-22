@@ -9,6 +9,7 @@ namespace ToTable.Interfaces;
 
 public interface IOrderService
 {
+    Task<IEnumerable<Order>> GetOrdersByRestaurantId(int restaurantId);
     Task<List<Order>> GetOrderObject();
     Task<Order> GetOrder(int id);
     Task<int> PostOrder(OrderDto Order);

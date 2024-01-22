@@ -115,4 +115,11 @@ public Task<List<OrderItem>> GetOrderObjectById(int orderId)
     }
 }
 
+public async Task<IEnumerable<Order>> GetOrdersByRestaurantId(int restaurantId)
+{
+    return await _context.OrderObject
+        .Where(order => order.RestaurantId == restaurantId)
+        .ToListAsync();
+}
+
 }
