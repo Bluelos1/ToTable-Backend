@@ -79,5 +79,16 @@ namespace ToTable.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("login/{login}/{password}")]
+        public async Task<ActionResult<Waiter>> GetWaiterByCredentials(string login, string password)
+        {
+            var waiter = await _waiterService.GetWaiterByCredentials(login, password);
+            if (waiter == null)
+            {
+                return NotFound();
+            }
+            return waiter;
+        }
     }
 }

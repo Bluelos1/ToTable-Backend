@@ -76,5 +76,9 @@ public class WaiterService : IWaiterService
         return availableWaiter?.WaiterId ?? 0;
     }
     
+    public async Task<Waiter> GetWaiterByCredentials(string login, string password)
+{
+    return await _context.WaiterObject.FirstOrDefaultAsync(w => w.WaiterLogin == login && w.WaiterPassw == password);
+}
 
 }

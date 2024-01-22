@@ -76,4 +76,10 @@ public class RestaurantService : IRestaurantService
     {
         return _context.RestaurantObject.AnyAsync(x => x.RestaurantId == id);
     }       
+
+    public async Task<Restaurant> GetRestaurantByCredentials(string login, string password)
+    {
+        return await _context.RestaurantObject.FirstOrDefaultAsync(r => r.Login == login && r.Password == password);
+    }
+
 }
