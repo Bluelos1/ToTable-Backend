@@ -44,15 +44,25 @@ public class OrderItemService : IOrderItemService
         return _context.OrderItemObject.FirstOrDefaultAsync(x => x.ItemId == id);
     }   
 
-    public async Task PostOrderItem(OrderItem OrderItem)
-    {
-        _context.OrderItemObject.Add(OrderItem);
-        await _context.SaveChangesAsync();
-    }
+    // public async Task PostOrderItem(OrderItemDto orderItem)
+    // {
+    //     var item = new OrderItem
+    //     {
+    //         ProductId = orderItem.ProductId,
+    //         ItemQuantity = orderItem.ItemQuantity,
+    //         OrderId = orderItem.OrderId
+    //     };
+    //     _context.OrderItemObject.Add(item);
+    //     await _context.SaveChangesAsync();
+    //     orderItem.ItemId = item.ItemId;
+    // }
 
-    public async Task PutOrderItem(int id, OrderItemDto OrderItem)
+    public async Task PutOrderItem(int id, OrderItemDto orderItem)
     {
-        _context.Entry(OrderItem).State = EntityState.Modified;
+        var item = await _context.OrderItemObject.FirstOrDefaultAsync(x => x.ItemId == id);
+        item.OrderId = orderItem.OrderId;
+        item.ProductId = orderItem.ProductId;
+        item.ItemQuantity = orderItem.ItemQuantity;
         await _context.SaveChangesAsync();
     }
 
@@ -66,7 +76,7 @@ public class OrderItemService : IOrderItemService
         }
     }
     
-    public async Task AddProductToOrder(OrderItemDto orderItemDto)
+    public async Task PostOrderItem(OrderItemDto orderItemDto)
     {
         var product = await _context.ProductObject.FindAsync(orderItemDto.ProductId);
         var order = await _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId== orderItemDto.ItemId); 
@@ -74,13 +84,14 @@ public class OrderItemService : IOrderItemService
             
         var orderItem = new OrderItem()
         {
-            OrderId = order.OrderId,
-            ProductId = product.ProductId,
+            OrderId = orderItemDto.OrderId,
+            ProductId = orderItemDto.ProductId,
             ItemQuantity = orderItemDto.ItemQuantity,
-            ItemPrice = product.ProductPrice * orderItemDto.ItemQuantity,
         };
         _context.OrderItemObject.Add(orderItem);
         await _context.SaveChangesAsync();
+        orderItemDto.ItemId = orderItem.ItemId;
+
     }
     
     

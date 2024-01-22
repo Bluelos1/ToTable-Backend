@@ -58,12 +58,7 @@ namespace ToTable.Controllers
         }
 
         
-        [HttpPost]
-        public async Task<ActionResult<OrderItem>> PostOrder(OrderItem orderItem)
-        {
-            await _itemService.PostOrderItem(orderItem);
-            return CreatedAtAction("GetOrder", new { id = orderItem.ItemId }, orderItem);
-        }
+        
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteOrder(int id)
@@ -85,10 +80,10 @@ namespace ToTable.Controllers
             
         }
         
-        [HttpPost("ProductToOrder")]
+        [HttpPost("Post")]
         public async Task<ActionResult<int>> AddProductToOrder(OrderItemDto orderItemDto)
         {
-            await _itemService.AddProductToOrder(orderItemDto);
+            await _itemService.PostOrderItem(orderItemDto);
             return CreatedAtAction("GetOrder", new { id = orderItemDto.ProductId }, orderItemDto);
         }
 

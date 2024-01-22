@@ -8,7 +8,6 @@ public class OrderItem
     [Key]
     public int ItemId { get; set; }
     public int ItemQuantity { get; set; }
-    public double ItemPrice { get; set; }
     public int ProductId { get; set; }
     public Product? Product { get; set; }
     public int? OrderId { get; set; }

@@ -72,6 +72,7 @@ public class OrderService : IOrderService
         orderById.OrderTime = DateTime.Now;
         orderById.OrderStatus = order.OrderStatus;
         orderById.OrderComment = null;
+        orderById.PaymentMethod = order.PaymentMethod;
         orderById.WaiterId = order.WaiterId;
         orderById.TableId = order.TableId;
         orderById.RestaurantId = order.RestaurantId;
@@ -118,13 +119,5 @@ public Task<List<OrderItem>> GetOrderObjectById(int orderId)
         throw;
     }
 }
-
-
-    public async Task<decimal> GetOrderPrice(int id)
-    { 
-        var orderObject = await GetOrderObjectById(id);
-        decimal orderPrice = orderObject.Sum(item => (decimal)item.ItemPrice);
-        return orderPrice;
-    }
 
 }

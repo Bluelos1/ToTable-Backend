@@ -49,11 +49,15 @@ public class TableService : ITableService
             };
             _context.TableObject.Add(tableItem);
             await _context.SaveChangesAsync();
+            table.RestaurantId = tableItem.RestaurantId;
         }
 
     public async Task PutTable(int id, TableDto table)
     {
-        _context.Entry(table).State = EntityState.Modified;
+        var tableItem = await _context.TableObject.FirstOrDefaultAsync(x => x.TabId == id);
+        tableItem.TabNum = table.TabNum;
+        tableItem.TabStatus = table.TabStatus;
+        tableItem.RestaurantId = table.RestaurantId;
         await _context.SaveChangesAsync();
     }
 
