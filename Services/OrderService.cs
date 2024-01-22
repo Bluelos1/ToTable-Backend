@@ -31,16 +31,11 @@ public class OrderService : IOrderService
             throw;
         }
     }
+    
 
-
-    public Task<List<Order>> GetOrderItems()
+    public  Task<Order> GetOrder(int id)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<Order> GetOrder(int id)
-    {
-        return _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId == id);
+        return  _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId == id);
     }
 
     public async Task<int> PostOrder(OrderDto order)
@@ -70,8 +65,9 @@ public class OrderService : IOrderService
         var orderById = _context.OrderObject.FirstOrDefault(x => x.OrderId == id);
 
         orderById.OrderTime = DateTime.Now;
-        orderById.OrderStatus = OrderStatus.New;
+        orderById.OrderStatus = order.OrderStatus;
         orderById.OrderComment = null;
+        orderById.PaymentMethod = order.PaymentMethod;
         orderById.WaiterId = order.WaiterId;
         orderById.TableId = order.TableId;
         orderById.RestaurantId = order.RestaurantId;
@@ -89,14 +85,14 @@ public class OrderService : IOrderService
         }
     }
 
-    public Task<bool> OrderExists(int id)
+    public async Task<bool> OrderExists(int id)
     {
-        return _context.OrderObject.AnyAsync(x => x.OrderId == id);
+        return _context.OrderObject.Any(x => x.OrderId == id);
     }
     
     public async Task AddCommentToOrder(int orderId, string comment)
     {
-        var order = await _context.OrderObject.FindAsync(orderId);
+        var order =  _context.OrderObject.Find(orderId);
         if (order != null)
         {
             order.OrderComment = comment;
@@ -118,13 +114,5 @@ public Task<List<OrderItem>> GetOrderObjectById(int orderId)
         throw;
     }
 }
-
-
-    public async Task<decimal> GetOrderPrice(int id)
-    { 
-        var orderObject = await GetOrderObjectById(id);
-        decimal orderPrice = orderObject.Sum(item => (decimal)item.ItemPrice);
-        return orderPrice;
-    }
 
 }

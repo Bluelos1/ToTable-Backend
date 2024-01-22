@@ -16,6 +16,5 @@ public interface IOrderService
     Task DeleteOrder(int id);
     Task AddCommentToOrder(int orderId, string comment);
     Task<bool> OrderExists(int id);
-    Task<decimal> GetOrderPrice(int id);
 }
 

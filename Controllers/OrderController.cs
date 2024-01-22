@@ -38,7 +38,8 @@ namespace ToTable.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
-            if (_orderService.GetOrder(id) == null)
+            var item = await _orderService.GetOrder(id);
+            if (item == null)
             {
                 return NotFound();
             }
@@ -92,18 +93,7 @@ namespace ToTable.Controllers
             return Ok();
         }
 
-        [HttpGet("{id}/GetOrderPrice")]
-        public async Task<ActionResult<decimal>> GetOrderPrice(int id)
-        {
-            var order = await _orderService.GetOrder(id);
-
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(_orderService.GetOrderPrice(id));
-        }
+        
 
     }
 }
