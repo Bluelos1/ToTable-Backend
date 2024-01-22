@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ToTable.Contract;
 using ToTable.Interfaces;
 using ToTable.Models;
 
@@ -30,49 +31,43 @@ public class OrderService : IOrderService
             throw;
         }
     }
+    
 
-
-    public Task<List<Order>> GetOrderItems()
+    public  Task<Order> GetOrder(int id)
     {
-        throw new NotImplementedException();
+        return  _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId == id);
     }
 
-    public Task<Order> GetOrder(int id)
-    {
-        return _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId == id);
-    }
-
-    public async Task<int> PostOrder(Order order)
+    public async Task<int> PostOrder(OrderDto order)
     {
         var waiterId = await _waiterService.GetAvailableWaiterId();
+        
            
         var orderItem = new Order
         {
             OrderTime = DateTime.Now,
             OrderStatus = OrderStatus.New,
             OrderComment = null,
-            WaiterId = waiterId,
+            PaymentMethod = order.PaymentMethod,
+            WaiterId = order.WaiterId,
             TableId = order.TableId,
             RestaurantId = order.RestaurantId
         }; 
-        var waiter = await _context.WaiterObject.FindAsync(waiterId);
-        if (waiter != null)
-        {
-            waiter.IsAvailable = false;
-        } 
         
         _context.OrderObject.Add(orderItem);
         await _context.SaveChangesAsync();
+        order.OrderId = orderItem.OrderId;
         return order.OrderId;
     }
 
-    public async Task PutOrder(int id, Order order)
+    public async Task PutOrder(int id, OrderDto order)
     {
         var orderById = _context.OrderObject.FirstOrDefault(x => x.OrderId == id);
 
         orderById.OrderTime = DateTime.Now;
-        orderById.OrderStatus = OrderStatus.New;
+        orderById.OrderStatus = order.OrderStatus;
         orderById.OrderComment = null;
+        orderById.PaymentMethod = order.PaymentMethod;
         orderById.WaiterId = order.WaiterId;
         orderById.TableId = order.TableId;
         orderById.RestaurantId = order.RestaurantId;
@@ -90,14 +85,14 @@ public class OrderService : IOrderService
         }
     }
 
-    public Task<bool> OrderExists(int id)
+    public async Task<bool> OrderExists(int id)
     {
-        return _context.OrderObject.AnyAsync(x => x.OrderId == id);
+        return _context.OrderObject.Any(x => x.OrderId == id);
     }
     
     public async Task AddCommentToOrder(int orderId, string comment)
     {
-        var order = await _context.OrderObject.FindAsync(orderId);
+        var order =  _context.OrderObject.Find(orderId);
         if (order != null)
         {
             order.OrderComment = comment;
@@ -119,13 +114,5 @@ public Task<List<OrderItem>> GetOrderObjectById(int orderId)
         throw;
     }
 }
-
-
-    public async Task<decimal> GetOrderPrice(int id)
-    { 
-        var orderObject = await GetOrderObjectById(id);
-        decimal orderPrice = orderObject.Sum(item => (decimal)item.ItemPrice);
-        return orderPrice;
-    }
 
 }

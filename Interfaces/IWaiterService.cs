@@ -1,4 +1,5 @@
-﻿using ToTable.Models;
+﻿using ToTable.Contract;
+using ToTable.Models;
 
 namespace ToTable.Interfaces;
 
@@ -7,8 +8,8 @@ namespace ToTable.Interfaces;
     {
         Task<List<Waiter>> GetWaiterObject();
         Task<Waiter> GetWaiter(int id);
-        Task PostWaiter(Waiter waiter);
-        Task PutWaiter(int id, Waiter waiter);
+        Task PostWaiter(WaiterDto waiter);
+        Task PutWaiter(int id, WaiterDto waiter);
         Task DeleteWaiter(int id);
         Task<int> GetAvailableWaiterId();
         Task<Waiter> GetWaiterByCredentials(string login, string password);

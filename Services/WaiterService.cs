@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ToTable.Contract;
 using ToTable.Interfaces;
 using ToTable.Models;
 
@@ -29,7 +30,7 @@ public class WaiterService : IWaiterService
     }
 
 
-    public async Task PostWaiter(Waiter waiter)
+    public async Task PostWaiter(WaiterDto waiter)
     {
         var waiterItem = new Waiter
         {
@@ -43,11 +44,18 @@ public class WaiterService : IWaiterService
 
     _context.WaiterObject.Add(waiterItem);
         await _context.SaveChangesAsync();
+        waiter.WaiterId = waiterItem.WaiterId;
     }
 
-    public async Task PutWaiter(int id, Waiter waiter)
+    public async Task PutWaiter(int id, WaiterDto waiter)
     {
-        _context.Entry(waiter).State = EntityState.Modified;
+        var waitreItem = await _context.WaiterObject.FirstOrDefaultAsync(x => x.WaiterId == id);
+        waitreItem.WaiterName = waiter.WaiterName;
+        waitreItem.WaiterSurname = waiter.WaiterSurname;
+        waitreItem.WaiterLogin = waiter.WaiterLogin;
+        waitreItem.WaiterPassw = waiter.WaiterPassw;
+        waitreItem.IsAvailable = waiter.IsAvailable;
+        waitreItem.RestaurantId = waiter.RestaurantId;
         await _context.SaveChangesAsync();
     }
 

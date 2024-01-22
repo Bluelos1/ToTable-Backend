@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ToTable.Contract;
 using ToTable.Models;
 
 namespace ToTable.Controllers
@@ -41,7 +42,7 @@ namespace ToTable.Controllers
 
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTable(int id, Table table)
+        public async Task<IActionResult> PutTable(int id, TableDto table)
         {
             if (id != table.TabId)
             {
@@ -69,7 +70,7 @@ namespace ToTable.Controllers
 
         
         [HttpPost]
-        public async Task<ActionResult<Table>> PostTable(Table table, [FromServices] ITableService _tableService)
+        public async Task<ActionResult<Table>> PostTable(TableDto table, [FromServices] ITableService _tableService)
         {
             await _tableService.PostTable(table);
             return CreatedAtAction("GetTable", new { id = table.TabId }, table);

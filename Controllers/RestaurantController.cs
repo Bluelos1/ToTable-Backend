@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
+using ToTable.Contract;
 using ToTable.Interfaces;
 using ToTable.Models;
 
 namespace ToTable.Controllers;
 
+
    [Route("api/[controller]")]
    [ApiController]
+
 public class RestaurantController:ControllerBase
 {
     private readonly IRestaurantService _RestaurantService;
@@ -39,7 +42,7 @@ public class RestaurantController:ControllerBase
     
             
             [HttpPut("{id}")]
-            public async Task<IActionResult> PutRestaurant(int id, Restaurant Restaurant)
+            public async Task<IActionResult> PutRestaurant(int id, RestaurantDto Restaurant)
             {
                 if (id != Restaurant.RestaurantId)
                 {
@@ -52,7 +55,7 @@ public class RestaurantController:ControllerBase
     
             
             [HttpPost]
-            public async Task<ActionResult<Restaurant>> PostRestaurant(Restaurant Restaurant)
+            public async Task<ActionResult<Restaurant>> PostRestaurant(RestaurantDto Restaurant)
             {
                 await _RestaurantService.PostRestaurant(Restaurant);
                 return CreatedAtAction("GetRestaurant", new { id = Restaurant.RestaurantId }, Restaurant);

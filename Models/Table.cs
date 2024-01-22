@@ -9,5 +9,5 @@ public class Table
     public int TabNum { get; set; }
     public bool TabStatus { get; set; }
     public int RestaurantId { get; set; }
-    public Restaurant Restaurant { get; set; }
+    public Restaurant? Restaurant { get; set; }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ToTable.Contract;
 using ToTable.Interfaces;
 using ToTable.Models;
 
@@ -25,7 +26,7 @@ namespace ToTable.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrderObject()
         {
-            var order = _orderService.GetOrderItems();
+            var order = _orderService.GetOrderObject();
             if (order == null)
             {
                 return NotFound();
@@ -37,7 +38,8 @@ namespace ToTable.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
-            if (_orderService.GetOrder(id) == null)
+            var item = await _orderService.GetOrder(id);
+            if (item == null)
             {
                 return NotFound();
             }
@@ -46,7 +48,7 @@ namespace ToTable.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(int id, Order order)
+        public async Task<IActionResult> PutOrder(int id, OrderDto order)
         {
             if (id != order.OrderId)
             {
@@ -58,7 +60,7 @@ namespace ToTable.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(Order order)
+        public async Task<ActionResult<int>> PostOrder(OrderDto order)
         {
             await _orderService.PostOrder(order);
             return CreatedAtAction("GetOrder", new
@@ -91,18 +93,7 @@ namespace ToTable.Controllers
             return Ok();
         }
 
-        [HttpGet("{id}/GetOrderPrice")]
-        public async Task<ActionResult<decimal>> GetOrderPrice(int id)
-        {
-            var order = await _orderService.GetOrder(id);
-
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(_orderService.GetOrderPrice(id));
-        }
+        
 
     }
 }
