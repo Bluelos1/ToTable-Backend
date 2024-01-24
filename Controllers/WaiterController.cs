@@ -90,5 +90,18 @@ namespace ToTable.Controllers
             }
             return waiter;
         }
+
+         [HttpGet("restaurant/{restaurantId}")]
+        public async Task<ActionResult<IEnumerable<Waiter>>> GetWaitersByRestaurantId(int restaurantId)
+        {
+            var waiters = await _waiterService.GetWaitersByRestaurantId(restaurantId);
+            if (waiters == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(waiters);
+        }
+        
     }
 }

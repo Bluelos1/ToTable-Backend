@@ -9,4 +9,5 @@ public class WaiterDto
     public string WaiterPassw { get; set; }
     public bool IsAvailable { get; set; }
     public int RestaurantId { get; set; }
+    public bool IsAdmin {get;set;}
 }

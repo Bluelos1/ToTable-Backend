@@ -12,8 +12,8 @@ using ToTable.Models;
 namespace ToTable.Migrations
 {
     [DbContext(typeof(ToTableDbContext))]
-    [Migration("20240122151537_migration1")]
-    partial class migration1
+    [Migration("20240124023236_migration872")]
+    partial class migration872
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -196,6 +196,9 @@ namespace ToTable.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WaiterId"));
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("boolean");

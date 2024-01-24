@@ -93,7 +93,20 @@ namespace ToTable.Controllers
             return Ok();
         }
 
-        
+
+
+        [HttpGet("restaurant/{restaurantId}")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByRestaurantId(int restaurantId)
+        {
+            var orders = await _orderService.GetOrdersByRestaurantId(restaurantId);
+            if (orders == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(orders);
+        }
+
 
     }
 }

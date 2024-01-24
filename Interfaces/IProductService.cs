@@ -12,5 +12,6 @@ namespace ToTable.Interfaces
         Task PostProduct(ProductDto product);
         Task PutProduct(int id, ProductDto product);
         Task DeleteProduct(int id);
+        Task<IEnumerable<Product>> GetProductsByRestaurantId(int restaurantId);
     }
 }

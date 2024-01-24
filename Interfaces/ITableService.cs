@@ -12,4 +12,5 @@ public interface ITableService
     Task PutTable(int id, TableDto table);
     Task DeleteTable(int id);
     Task<int> GetAvailableTableId();
+    Task<IEnumerable<Table>> GetTablesByRestaurantId(int restaurantId);
 }
