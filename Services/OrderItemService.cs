@@ -76,12 +76,21 @@ public class OrderItemService : IOrderItemService
         }
     }
     
-    public async Task PostOrderItem(OrderItemDto orderItemDto)
+ public async Task PostOrderItem(OrderItemDto orderItemDto)
+{
+    var order = await _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId == orderItemDto.OrderId);
+    var product = await _context.ProductObject.FindAsync(orderItemDto.ProductId);
+
+    var existingOrderItem = await _context.OrderItemObject
+        .FirstOrDefaultAsync(x => x.OrderId == orderItemDto.OrderId && x.ProductId == orderItemDto.ProductId);
+
+    if (existingOrderItem != null)
     {
-        var product = await _context.ProductObject.FindAsync(orderItemDto.ProductId);
-        var order = await _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId== orderItemDto.ItemId); 
-        
-            
+        existingOrderItem.ItemQuantity += orderItemDto.ItemQuantity;
+        await _context.SaveChangesAsync();
+    }
+    else
+    {
         var orderItem = new OrderItem()
         {
             OrderId = orderItemDto.OrderId,
@@ -91,9 +100,8 @@ public class OrderItemService : IOrderItemService
         _context.OrderItemObject.Add(orderItem);
         await _context.SaveChangesAsync();
         orderItemDto.ItemId = orderItem.ItemId;
-
     }
-    
+}
     
 
     public async Task<List<OrderItem>> GetAllOrderObjectByOrderId(int orderId)
