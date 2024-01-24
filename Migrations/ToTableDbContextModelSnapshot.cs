@@ -194,6 +194,9 @@ namespace ToTable.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WaiterId"));
 
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("boolean");
 
