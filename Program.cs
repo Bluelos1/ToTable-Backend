@@ -39,7 +39,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("myAppCors", policy =>
     {
-        policy.WithOrigins(allowedOrigin)
+        policy.AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -56,10 +56,10 @@ if (app.Environment.IsDevelopment())
 
 // Uncomment to use the global exception handling middleware
 // app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-
+app.UseCors("myAppCors");
 app.UseHttpsRedirection();
 app.UseSession();
-app.UseCors("myAppCors");
+
 
 app.UseAuthorization();
 app.MapControllers();
