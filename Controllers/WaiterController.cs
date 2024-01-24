@@ -69,7 +69,7 @@ namespace ToTable.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteWaiter(int id)
         {
-            var waiter = _waiterService.GetWaiter(id);
+            var waiter = await _waiterService.GetWaiter(id);
             if (waiter == null)
             {
                 return NotFound();
