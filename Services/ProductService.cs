@@ -80,5 +80,13 @@ public class ProductService : IProductService
     public Task<bool> ProductExists(int id)
     {
         return _context.ProductObject.AnyAsync(x => x.ProductId == id);
-    }       
+    }    
+
+    public async Task<IEnumerable<Product>> GetProductsByRestaurantId(int restaurantId)
+{
+    return await _context.ProductObject
+        .Where(product => product.RestaurantId == restaurantId)
+        .ToListAsync();
+}
+
 }
