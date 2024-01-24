@@ -115,9 +115,20 @@ public Task<List<OrderItem>> GetOrderObjectById(int orderId)
     }
 }
 
-public async Task<IEnumerable<Order>> GetOrdersByRestaurantId(int restaurantId)
+public async Task<IEnumerable<OrderDto>> GetOrdersByRestaurantId(int restaurantId)
 {
-    return await _context.OrderObject
+    return await _context.OrderObject.Select(x => new OrderDto
+        {
+            OrderId = x.OrderId,
+            OrderComment = x.OrderComment,
+            OrderStatus = x.OrderStatus,
+            RestaurantId = x.RestaurantId,
+            PaymentMethod = x.PaymentMethod,
+            WaiterId = x.RestaurantId,
+            OrderTime = x.OrderTime,
+            TableId = x.RestaurantId
+            
+        })
         .Where(order => order.RestaurantId == restaurantId)
         .ToListAsync();
 }
