@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ToTable.Migrations
 {
     /// <inheritdoc />
-    public partial class migration1 : Migration
+    public partial class migration872 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -86,7 +86,8 @@ namespace ToTable.Migrations
                     WaiterLogin = table.Column<string>(type: "text", nullable: false),
                     WaiterPassw = table.Column<string>(type: "text", nullable: false),
                     IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
-                    RestaurantId = table.Column<int>(type: "integer", nullable: false)
+                    RestaurantId = table.Column<int>(type: "integer", nullable: false),
+                    IsAdmin = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {

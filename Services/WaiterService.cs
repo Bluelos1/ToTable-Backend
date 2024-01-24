@@ -39,7 +39,8 @@ public class WaiterService : IWaiterService
             WaiterLogin = waiter.WaiterLogin,
             WaiterPassw = waiter.WaiterPassw,
             IsAvailable = true,
-            RestaurantId = waiter.RestaurantId
+            RestaurantId = waiter.RestaurantId,
+            IsAdmin = false
         };
 
     _context.WaiterObject.Add(waiterItem);
@@ -56,6 +57,7 @@ public class WaiterService : IWaiterService
         waitreItem.WaiterPassw = waiter.WaiterPassw;
         waitreItem.IsAvailable = waiter.IsAvailable;
         waitreItem.RestaurantId = waiter.RestaurantId;
+        waitreItem.IsAdmin = waiter.IsAdmin;
         await _context.SaveChangesAsync();
     }
 

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace ToTable.Models;
 
@@ -13,4 +13,5 @@ public class Waiter
     public bool IsAvailable { get; set; }
     public int RestaurantId { get; set; }
     public Restaurant? Restaurant { get; set; }
+    public bool IsAdmin { get; set; }
 }
