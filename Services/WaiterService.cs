@@ -83,4 +83,13 @@ public class WaiterService : IWaiterService
     return await _context.WaiterObject.FirstOrDefaultAsync(w => w.WaiterLogin == login && w.WaiterPassw == password);
 }
 
+public async Task<IEnumerable<Waiter>> GetWaitersByRestaurantId(int restaurantId)
+{
+    return await _context.WaiterObject
+        .Where(waiter => waiter.RestaurantId == restaurantId)
+        .ToListAsync();
+}
+
+
+
 }

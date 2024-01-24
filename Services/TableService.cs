@@ -82,4 +82,12 @@ public class TableService : ITableService
             .FirstOrDefaultAsync(t => t.TabStatus);
         return availableTable?.TabId ?? 0; 
     }
+
+    public async Task<IEnumerable<Table>> GetTablesByRestaurantId(int restaurantId)
+{
+    return await _context.TableObject
+        .Where(table => table.RestaurantId == restaurantId)
+        .ToListAsync();
+}
+
 }

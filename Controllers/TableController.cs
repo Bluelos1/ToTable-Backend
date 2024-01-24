@@ -82,5 +82,19 @@ namespace ToTable.Controllers
            await _tableService.DeleteTable(id);
            return NoContent();
         }
+
+         [HttpGet("restaurant/{restaurantId}")]
+        public async Task<ActionResult<IEnumerable<Table>>> GetTablesByRestaurantId(int restaurantId)
+        {
+            var tables = await _tableService.GetTablesByRestaurantId(restaurantId);
+            if (tables == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(tables);
+        }
+
+
     }
 }
