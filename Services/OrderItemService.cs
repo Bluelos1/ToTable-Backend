@@ -26,11 +26,17 @@ public class OrderItemService : IOrderItemService
         _logger = logger;
     }
 
-    public Task<List<OrderItem>> GetOrderItemObject()
+    public Task<List<OrderItemDto>> GetOrderItemObject()
     {
         try
         {
-            return _context.OrderItemObject.ToListAsync();
+            return _context.OrderItemObject.Select(x => new OrderItemDto
+            {
+                ItemId = x.ItemId,
+                ItemQuantity = x.ItemQuantity,
+                ProductId = x.ProductId,
+                OrderId = x.OrderId
+            }).ToListAsync();
         }
         catch (Exception e)
         {

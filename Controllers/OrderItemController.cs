@@ -24,7 +24,7 @@ namespace ToTable.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<OrderItem>>> GetOrderObject()
+        public async Task<ActionResult<List<OrderItemDto>>> GetOrderObject()
         {
             var orderItem = _itemService.GetOrderItemObject();
           if (orderItem == null)
