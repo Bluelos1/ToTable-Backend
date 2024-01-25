@@ -39,10 +39,18 @@ public class WaiterService : IWaiterService
             WaiterLogin = waiter.WaiterLogin,
             WaiterPassw = waiter.WaiterPassw,
             IsAvailable = true,
-            RestaurantId = waiter.RestaurantId
+            RestaurantId = waiter.RestaurantId,
+            IsAdmin = false
         };
+        _context.WaiterObject.Add(waiterItem);
+        
+        var restaurnt = await _context.RestaurantObject.FirstOrDefaultAsync(x => x.RestaurantId == waiterItem.RestaurantId);
+        if (restaurnt != null)
+        {
+            restaurnt.WaiterQantity += 1;
+            _context.RestaurantObject.Update(restaurnt);
 
-    _context.WaiterObject.Add(waiterItem);
+        }
         await _context.SaveChangesAsync();
         waiter.WaiterId = waiterItem.WaiterId;
     }
@@ -56,6 +64,7 @@ public class WaiterService : IWaiterService
         waitreItem.WaiterPassw = waiter.WaiterPassw;
         waitreItem.IsAvailable = waiter.IsAvailable;
         waitreItem.RestaurantId = waiter.RestaurantId;
+        waitreItem.IsAdmin = waiter.IsAdmin;
         await _context.SaveChangesAsync();
     }
 
@@ -76,5 +85,18 @@ public class WaiterService : IWaiterService
         return availableWaiter?.WaiterId ?? 0;
     }
     
+    public async Task<Waiter> GetWaiterByCredentials(string login, string password)
+{
+    return await _context.WaiterObject.FirstOrDefaultAsync(w => w.WaiterLogin == login && w.WaiterPassw == password);
+}
+
+public async Task<IEnumerable<Waiter>> GetWaitersByRestaurantId(int restaurantId)
+{
+    return await _context.WaiterObject
+        .Where(waiter => waiter.RestaurantId == restaurantId)
+        .ToListAsync();
+}
+
+
 
 }

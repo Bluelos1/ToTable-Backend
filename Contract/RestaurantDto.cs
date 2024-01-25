@@ -6,6 +6,6 @@ public class RestaurantDto
     public string RestaurantName { get; set; }
     public string Login { get; set; }
     public string Password { get; set; }
-    public string TableQuantity { get; set; }
-    public string WaiterQantity { get; set; }
+    public int TableQuantity { get; set; }
+    public int WaiterQantity { get; set; }
 }

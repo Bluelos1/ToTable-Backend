@@ -66,7 +66,7 @@ public class OrderService : IOrderService
 
         orderById.OrderTime = DateTime.Now;
         orderById.OrderStatus = order.OrderStatus;
-        orderById.OrderComment = null;
+        orderById.OrderComment = order.OrderComment;
         orderById.PaymentMethod = order.PaymentMethod;
         orderById.WaiterId = order.WaiterId;
         orderById.TableId = order.TableId;
@@ -113,6 +113,24 @@ public Task<List<OrderItem>> GetOrderObjectById(int orderId)
         _logger.LogError(e, $"Error occurred while fetching Object for order {orderId}.");
         throw;
     }
+}
+
+public async Task<IEnumerable<OrderDto>> GetOrdersByRestaurantId(int restaurantId)
+{
+    return await _context.OrderObject.Select(x => new OrderDto
+        {
+            OrderId = x.OrderId,
+            OrderComment = x.OrderComment,
+            OrderStatus = x.OrderStatus,
+            RestaurantId = x.RestaurantId,
+            PaymentMethod = x.PaymentMethod,
+            WaiterId = x.RestaurantId,
+            OrderTime = x.OrderTime,
+            TableId = x.RestaurantId
+            
+        })
+        .Where(order => order.RestaurantId == restaurantId)
+        .ToListAsync();
 }
 
 }

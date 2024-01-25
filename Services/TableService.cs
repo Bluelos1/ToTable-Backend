@@ -48,6 +48,14 @@ public class TableService : ITableService
                 RestaurantId = table.RestaurantId
             };
             _context.TableObject.Add(tableItem);
+
+            var restaurant = await _context.RestaurantObject.FirstOrDefaultAsync(x => x.RestaurantId == tableItem.RestaurantId);
+            if (restaurant != null)
+            {
+                restaurant.TableQuantity += 1;
+                _context.RestaurantObject.Update(restaurant);
+            }
+            
             await _context.SaveChangesAsync();
             table.RestaurantId = tableItem.RestaurantId;
         }
@@ -82,4 +90,12 @@ public class TableService : ITableService
             .FirstOrDefaultAsync(t => t.TabStatus);
         return availableTable?.TabId ?? 0; 
     }
+
+    public async Task<IEnumerable<Table>> GetTablesByRestaurantId(int restaurantId)
+{
+    return await _context.TableObject
+        .Where(table => table.RestaurantId == restaurantId)
+        .ToListAsync();
+}
+
 }

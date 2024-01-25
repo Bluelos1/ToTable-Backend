@@ -68,7 +68,8 @@ namespace ToTable.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            if (_productService.GetProduct(id)== null)
+            var prod = await _productService.GetProduct(id);
+            if (prod== null)
             {
                 return NotFound();
             }
@@ -76,5 +77,19 @@ namespace ToTable.Controllers
             await _productService.DeleteProduct(id);
             return NoContent();
         }
+
+         [HttpGet("restaurant/{restaurantId}")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductsByRestaurantId(int restaurantId)
+        {
+            var products = await _productService.GetProductsByRestaurantId(restaurantId);
+            if (products == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(products);
+        }
+
+
     }
 }

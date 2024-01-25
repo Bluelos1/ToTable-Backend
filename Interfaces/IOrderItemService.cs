@@ -13,5 +13,7 @@ public interface IOrderItemService
     Task DeleteOrderItem(int id);
     Task PostOrderItem(OrderItemDto orderItemDto);
     Task<List<OrderItem>> GetAllOrderObjectByOrderId(int orderId);
+    Task<OrderItem> UpdateOrderItemQuantity(int orderId, int itemId, int quantity);
+    Task DeleteOrderItemByOrderIdAndProductId(int orderId, int productId);
 
 }
