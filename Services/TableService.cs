@@ -48,6 +48,14 @@ public class TableService : ITableService
                 RestaurantId = table.RestaurantId
             };
             _context.TableObject.Add(tableItem);
+
+            var restaurant = await _context.RestaurantObject.FirstOrDefaultAsync(x => x.RestaurantId == tableItem.RestaurantId);
+            if (restaurant != null)
+            {
+                restaurant.TableQuantity += 1;
+                _context.RestaurantObject.Update(restaurant);
+            }
+            
             await _context.SaveChangesAsync();
             table.RestaurantId = tableItem.RestaurantId;
         }

@@ -42,8 +42,15 @@ public class WaiterService : IWaiterService
             RestaurantId = waiter.RestaurantId,
             IsAdmin = false
         };
+        _context.WaiterObject.Add(waiterItem);
+        
+        var restaurnt = await _context.RestaurantObject.FirstOrDefaultAsync(x => x.RestaurantId == waiterItem.RestaurantId);
+        if (restaurnt != null)
+        {
+            restaurnt.WaiterQantity += 1;
+            _context.RestaurantObject.Update(restaurnt);
 
-    _context.WaiterObject.Add(waiterItem);
+        }
         await _context.SaveChangesAsync();
         waiter.WaiterId = waiterItem.WaiterId;
     }
