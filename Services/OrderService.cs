@@ -66,7 +66,7 @@ public class OrderService : IOrderService
 
         orderById.OrderTime = DateTime.Now;
         orderById.OrderStatus = order.OrderStatus;
-        orderById.OrderComment = null;
+        orderById.OrderComment = order.OrderComment;
         orderById.PaymentMethod = order.PaymentMethod;
         orderById.WaiterId = order.WaiterId;
         orderById.TableId = order.TableId;

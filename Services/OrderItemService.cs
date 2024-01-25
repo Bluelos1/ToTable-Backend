@@ -117,4 +117,32 @@ public class OrderItemService : IOrderItemService
     {
         return _context.OrderItemObject.AnyAsync(x => x.ItemId == id);
     }
+
+public async Task<OrderItem> UpdateOrderItemQuantity(int orderId, int itemId, int quantity)
+    {
+        var orderItem = await _context.OrderItemObject
+            .FirstOrDefaultAsync(x => x.OrderId == orderId && x.ItemId == itemId);
+
+        if (orderItem == null)
+        {
+            throw new ArgumentException("The order item with the given order ID and item ID does not exist.");
+        }
+
+        orderItem.ItemQuantity = quantity;
+        await _context.SaveChangesAsync();
+
+        return orderItem;
+    }
+    
+        public async Task DeleteOrderItemByOrderIdAndProductId(int orderId, int productId)
+    {
+        var orderItem = await _context.OrderItemObject
+            .FirstOrDefaultAsync(x => x.OrderId == orderId && x.ProductId == productId);
+        if (orderItem != null)
+        {
+            _context.OrderItemObject.Remove(orderItem);
+            await _context.SaveChangesAsync();
+        }
+        
+    }
 }

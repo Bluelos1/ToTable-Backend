@@ -87,6 +87,24 @@ namespace ToTable.Controllers
             return CreatedAtAction("GetOrder", new { id = orderItemDto.ProductId }, orderItemDto);
         }
 
-       
+    
+            [HttpPut("UpdateQuantity/{orderId}/{itemId}")]
+    public async Task<IActionResult> UpdateOrderItemQuantity(int orderId, int itemId, int quantity)
+    {
+        var orderItem = await _itemService.UpdateOrderItemQuantity(orderId, itemId, quantity);
+        return Ok(orderItem);
     }
+
+
+     [HttpDelete("{orderId}/{productId}")]
+    public async Task<ActionResult> DeleteOrderItemByOrderIdAndProductId(int orderId, int productId)
+    {
+        await _itemService.DeleteOrderItemByOrderIdAndProductId(orderId, productId);
+        return NoContent();
+    }
+
+
+    }
+
+   
 }
