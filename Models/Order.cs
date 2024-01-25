@@ -13,7 +13,7 @@ public class Order
     public string? OrderComment { get; set; }
     public string? PaymentMethod { get; set; }
     public int? WaiterId { get; set; }
-    public Waiter? Waiter { get; set; } 
+    public virtual Waiter? Waiter { get; set; } 
     public int TableId { get; set; }
     public Table? Table { get; set; }
     public int RestaurantId { get; set; }

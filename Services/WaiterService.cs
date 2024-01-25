@@ -61,7 +61,7 @@ public class WaiterService : IWaiterService
 
     public async Task DeleteWaiter(int id)
     {
-        var waiter = await _context.WaiterObject.FindAsync(id);
+        var waiter = await _context.WaiterObject.Include("Orders").FirstOrDefaultAsync(x => x.WaiterId == id);
         if (waiter != null)
         {
             _context.WaiterObject.Remove(waiter);

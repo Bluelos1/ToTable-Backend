@@ -14,6 +14,15 @@ namespace ToTable.Models
         public DbSet<Waiter> WaiterObject { get; set; } = null!;
         public DbSet<Restaurant> RestaurantObject { get; set; } = null!;
 
+        // protected override void OnModelCreating(ModelBuilder modelBuilder)
+        // {
+        //     modelBuilder.Entity<Waiter>()
+        //         .HasMany(e => e.Bars)
+        //         .WithRequired(e => e.Foo)
+        //         .HasForeignKey(e => e.FooId)
+        //         .WillCascadeOnDelete(false);
+        // }   
 
     }
+    
 }
