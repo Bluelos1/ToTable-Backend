@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -47,13 +48,31 @@ namespace ToTable.Controllers
 
        
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutOrder(int id, OrderItemDto orderItem)
+        public async Task<ActionResult> PutOrder(int id, OrderItemDto orderItem, IValidator<OrderItemDto> validator)
         {
+            var validationResult = await validator.ValidateAsync(orderItem);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
             if (id != orderItem.ItemId)
             {
-                return BadRequest();
+                return BadRequest("The ID in the URL does not match the Item ID in the order item data.");
             }
-            await _itemService.PutOrderItem(id, orderItem);
+
+            try
+            {
+                await _itemService.PutOrderItem(id, orderItem);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound($"Order item with ID {id} not found.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while updating the order item.");
+            }
+
             return NoContent();
         }
 
@@ -81,7 +100,7 @@ namespace ToTable.Controllers
         }
         
         [HttpPost("Post")]
-        public async Task<ActionResult<int>> AddProductToOrder(OrderItemDto orderItemDto)
+        public async Task<ActionResult<int>> AddProductToOrder(OrderItemDto orderItemDto, IValidator<OrderItemDto> validator)
         {
             await _itemService.PostOrderItem(orderItemDto);
             return CreatedAtAction("GetOrder", new { id = orderItemDto.ProductId }, orderItemDto);
@@ -91,8 +110,24 @@ namespace ToTable.Controllers
             [HttpPut("UpdateQuantity/{orderId}/{itemId}")]
     public async Task<IActionResult> UpdateOrderItemQuantity(int orderId, int itemId, int quantity)
     {
-        var orderItem = await _itemService.UpdateOrderItemQuantity(orderId, itemId, quantity);
-        return Ok(orderItem);
+        if (quantity <= 0)
+        {
+            return BadRequest("Quantity must be greater than 0.");
+        }
+
+        try
+        {
+            var orderItem = await _itemService.UpdateOrderItemQuantity(orderId, itemId, quantity);
+            if (orderItem == null)
+            {
+                return NotFound($"Order with ID {orderId} or Item with ID {itemId} not found.");
+            }
+            return Ok(orderItem);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while updating the order item quantity.");
+        }
     }
 
 

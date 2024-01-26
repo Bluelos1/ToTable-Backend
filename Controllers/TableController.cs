@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,27 +43,26 @@ namespace ToTable.Controllers
 
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTable(int id, TableDto table)
+        public async Task<IActionResult> PutTable(int id, TableDto table, IValidator<TableDto> validator)
         {
+            var validationResult = await validator.ValidateAsync(table);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+
             if (id != table.TabId)
             {
-                return BadRequest();
+                return BadRequest("Mismatch between ID in URL and table ID.");
             }
 
             try
             {
-                await _tableService.PutTable(id,table);
+                await _tableService.PutTable(id, table);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception)
             {
-                if (_tableService.GetTable(id).IsCanceled)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500, "An error occurred while updating the table.");
             }
 
             return NoContent();
@@ -70,10 +70,23 @@ namespace ToTable.Controllers
 
         
         [HttpPost]
-        public async Task<ActionResult<Table>> PostTable(TableDto table, [FromServices] ITableService _tableService)
+        public async Task<ActionResult<Table>> PostTable(TableDto table,IValidator<TableDto> validator)
         {
-            await _tableService.PostTable(table);
-            return CreatedAtAction("GetTable", new { id = table.TabId }, table);
+            var validationResult = await validator.ValidateAsync(table);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+
+            try
+            {
+                await _tableService.PostTable(table);
+                return CreatedAtAction("GetTable", new { id = table.TabId }, table);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         [HttpDelete("{id}")]

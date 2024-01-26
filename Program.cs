@@ -1,9 +1,12 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using ToTable.Contract;
 using ToTable.Controllers;
 using ToTable.Interfaces;
 using ToTable.Middleware;
 using ToTable.Models;
 using ToTable.Services;
+using ToTable.Validator;
 
 var builder = WebApplication.CreateBuilder(args);
 var Configuration = builder.Configuration;
@@ -22,6 +25,12 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<ITableService, TableService>();
 builder.Services.AddScoped<IWaiterService, WaiterService>();
+builder.Services.AddScoped<IValidator<OrderDto>, OrderValidator>();
+builder.Services.AddScoped<IValidator<OrderItemDto>, OrderItemValidator>();
+builder.Services.AddScoped<IValidator<ProductDto>, ProductValidator>();
+builder.Services.AddScoped<IValidator<RestaurantDto>, RestaurantValidator>();
+builder.Services.AddScoped<IValidator<TableDto>, TableValidator>();
+builder.Services.AddScoped<IValidator<WaiterDto>, WaiterValidator>();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 builder.Services.AddHttpContextAccessor();

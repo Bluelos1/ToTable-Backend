@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -48,22 +49,49 @@ namespace ToTable.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutWaiter(int id, WaiterDto waiter)
+        public async Task<IActionResult> PutWaiter(int id, WaiterDto waiter, IValidator<WaiterDto> validator)
         {
+            var validationResult = await validator.ValidateAsync(waiter);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+
             if (id != waiter.WaiterId)
             {
                 return BadRequest();
             }
 
-            await _waiterService.PutWaiter(id, waiter);
+            try
+            {
+                await _waiterService.PutWaiter(id, waiter);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+
             return NoContent();
         }
 
         [HttpPost]
-        public async Task<ActionResult<Waiter>> PostWaiter(WaiterDto waiter)
+        public async Task<ActionResult<Waiter>> PostWaiter(WaiterDto waiter, IValidator<WaiterDto> validator)
         {
-            await _waiterService.PostWaiter(waiter);
-            return CreatedAtAction("GetWaiter", new { id = waiter.WaiterId }, waiter);
+            var validationResult = await validator.ValidateAsync(waiter);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+
+            try
+            {
+                await _waiterService.PostWaiter(waiter);
+                return CreatedAtAction("GetWaiter", new { id = waiter.WaiterId }, waiter);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while creating the waiter.");
+            }
         }
 
         [HttpDelete("{id}")]

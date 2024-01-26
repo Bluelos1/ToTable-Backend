@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,23 +47,54 @@ namespace ToTable.Controllers
 
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, ProductDto product)
+        public async Task<IActionResult> PutProduct(int id, ProductDto product, IValidator<ProductDto> validator)
         {
-            if (id != product.ProductId)
+            var validationResult = await validator.ValidateAsync(product);
+            if (!validationResult.IsValid)
             {
-                return BadRequest();
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
             }
 
-            await _productService.PutProduct(id, product);
+            if (id != product.ProductId)
+            {
+                return BadRequest("Mismatch between ID in URL and product ID.");
+            }
+
+            try
+            {
+                await _productService.PutProduct(id, product);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound($"Product with ID {id} not found.");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while updating the product.");
+            }
+
             return NoContent();
         }
 
         
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(ProductDto product)
+        public async Task<ActionResult<Product>> PostProduct(ProductDto product,IValidator<ProductDto> validator)
         {
-            await _productService.PostProduct(product);
-            return CreatedAtAction("GetProduct", new { id = product.ProductId }, product);
+            var validationResult = await validator.ValidateAsync(product);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+
+            try
+            {
+                await _productService.PostProduct(product);
+                return CreatedAtAction("GetProduct", new { id = product.ProductId }, product);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while creating the product.");
+            }
         }
 
         [HttpDelete("{id}")]

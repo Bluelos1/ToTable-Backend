@@ -48,19 +48,12 @@ public class RestaurantService : IRestaurantService
         
         _context.RestaurantObject.Add(restaurantItem);
         await _context.SaveChangesAsync();
-        restaurant.RestaurantId = restaurantItem.RestaurantId;
     }
 
-    public async Task PutRestaurant(int id, RestaurantDto restaurant)
+    public async Task PutRestaurant(int id, RestaurantDto Restaurant)
     {
-        var restaurantItem = await _context.RestaurantObject.FirstOrDefaultAsync(x => x.RestaurantId == id);
-        restaurantItem.RestaurantName = restaurant.RestaurantName;
-        restaurantItem.Login = restaurant.Login;
-        restaurantItem.Password = restaurant.Password;
-        restaurantItem.TableQuantity = restaurant.TableQuantity;
-        restaurantItem.WaiterQantity = restaurant.WaiterQantity;
-        await _context.SaveChangesAsync();    
-    }
+        _context.Entry(Restaurant).State = EntityState.Modified;
+        await _context.SaveChangesAsync();    }
 
     public async Task DeleteRestaurant(int id)
     {
@@ -76,10 +69,4 @@ public class RestaurantService : IRestaurantService
     {
         return _context.RestaurantObject.AnyAsync(x => x.RestaurantId == id);
     }       
-
-    public async Task<Restaurant> GetRestaurantByCredentials(string login, string password)
-    {
-        return await _context.RestaurantObject.FirstOrDefaultAsync(r => r.Login == login && r.Password == password);
-    }
-
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -48,20 +49,41 @@ namespace ToTable.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(int id, OrderDto order)
+        public async Task<IActionResult> PutOrder(int id, OrderDto order, IValidator<OrderDto> validator)
         {
             if (id != order.OrderId)
             {
                 return BadRequest();
             }
 
-            await _orderService.PutOrder(id, order);
+            var validationResult = await validator.ValidateAsync(order);
+    
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+
+            try
+            {
+                await _orderService.PutOrder(id, order);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound($"Order with ID {id} not found.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while updating the order.");
+            }
             return NoContent();
         }
 
         [HttpPost]
-        public async Task<ActionResult<int>> PostOrder(OrderDto order)
+        public async Task<ActionResult> PostOrder(OrderDto order, IValidator<OrderDto> validator)
         {
+            var result = await validator.ValidateAsync(order);
+            if (!result.IsValid) return BadRequest(result.Errors.Select(e => e.ErrorMessage));
+
             await _orderService.PostOrder(order);
             return CreatedAtAction("GetOrder", new
             {
@@ -85,12 +107,27 @@ namespace ToTable.Controllers
         [HttpPost("PostComment")]
         public async Task<IActionResult> AddCommentToOrder(int id, string comment)
         {
-            var orderExists = await _orderService.OrderExists(id);
-            if (orderExists)
+            if (string.IsNullOrWhiteSpace(comment))
             {
-                _orderService.AddCommentToOrder(id, comment);
+                return BadRequest("Comment cannot be empty.");
             }
-
+            if (comment.Length > 500)
+            {
+                return BadRequest("Comment is too long.");
+            }
+            var orderExists = await _orderService.OrderExists(id);
+            if (!orderExists)
+            {
+                return NotFound($"Order with ID {id} not found.");
+            }
+            try
+            {
+                await _orderService.AddCommentToOrder(id, comment);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while adding the comment.");
+            }
             return Ok();
         }
 

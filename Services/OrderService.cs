@@ -38,7 +38,7 @@ public class OrderService : IOrderService
         return  _context.OrderObject.FirstOrDefaultAsync(x => x.OrderId == id);
     }
 
-    public async Task<int> PostOrder(OrderDto order)
+    public async Task PostOrder(OrderDto order)
     {
         var waiterId = await _waiterService.GetAvailableWaiterId();
         
@@ -57,7 +57,6 @@ public class OrderService : IOrderService
         _context.OrderObject.Add(orderItem);
         await _context.SaveChangesAsync();
         order.OrderId = orderItem.OrderId;
-        return order.OrderId;
     }
 
     public async Task PutOrder(int id, OrderDto order)

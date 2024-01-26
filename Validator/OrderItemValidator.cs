@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using ToTable.Contract;
 
+
 namespace ToTable.Validator;
 
 public class OrderItemValidator : AbstractValidator<OrderItemDto>
