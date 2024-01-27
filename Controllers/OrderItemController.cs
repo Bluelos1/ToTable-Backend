@@ -27,23 +27,24 @@ namespace ToTable.Controllers
         [HttpGet]
         public async Task<ActionResult<List<OrderItemDto>>> GetOrderObject()
         {
-            var orderItem = _itemService.GetOrderItemObject();
-          if (orderItem == null)
+            var orderItem = await _itemService.GetOrderItemObject();
+          if (orderItem == null || !orderItem.Any())
           {
               return NotFound();
           }
 
-          return await orderItem;
+          return  Ok(orderItem);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderItem>> GetOrder(int id)
         {
-          if (_itemService.GetOrderItem(id) == null)
+            var item = await _itemService.GetOrderItem(id);
+          if (item == null)
           {
               return NotFound();
           }
-            return await _itemService.GetOrderItem(id);
+            return Ok(item);
         }
 
        
@@ -95,14 +96,22 @@ namespace ToTable.Controllers
         [HttpGet("AllItems")]
         public async Task<ActionResult<List<OrderItem>>> GetAllOrderObjectByOrderId(int orderId)
         {
-            return await _itemService.GetAllOrderObjectByOrderId(orderId);
-            
+            var item = await _itemService.GetAllOrderObjectByOrderId(orderId); 
+            return Ok(item);
         }
         
         [HttpPost("Post")]
         public async Task<ActionResult<int>> AddProductToOrder(OrderItemDto orderItemDto, IValidator<OrderItemDto> validator)
         {
+            var validationResult = await validator.ValidateAsync(orderItemDto);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+
             await _itemService.PostOrderItem(orderItemDto);
+
             return CreatedAtAction("GetOrder", new { id = orderItemDto.ProductId }, orderItemDto);
         }
 

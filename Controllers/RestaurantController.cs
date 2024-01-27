@@ -18,12 +18,12 @@ public class RestaurantController:ControllerBase
             [HttpGet]
             public async Task<ActionResult<IEnumerable<Restaurant>>> GetRestaurantObject()
             { 
-                var RestaurantObject = _restaurantService.GetRestaurantObject();
-              if (RestaurantObject== null)
+                var restaurantObject = await _restaurantService.GetRestaurantObject();
+              if (restaurantObject== null || !restaurantObject.Any())
               {
                   return NotFound();
               }
-                return await RestaurantObject;
+                return  Ok(restaurantObject);
             }
     
             [HttpGet("{id}")]
@@ -34,7 +34,7 @@ public class RestaurantController:ControllerBase
               {
                   return NotFound();
               }
-                return item;
+                return Ok(item);
             }
     
             

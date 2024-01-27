@@ -25,7 +25,12 @@ namespace ToTable.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Table>>> GetTableObject()
         {
-          return await _tableService.GetTableObject();
+            var item = await _tableService.GetTableObject();
+            if (item== null || !item.Any())
+            {
+                return NotFound();
+            }
+            return  Ok(item);
         }
 
         [HttpGet("{id}")]
@@ -38,7 +43,7 @@ namespace ToTable.Controllers
                 return NotFound();
             }
 
-            return await table;
+            return  Ok(table);
         }
 
         

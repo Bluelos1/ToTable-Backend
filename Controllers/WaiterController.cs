@@ -27,18 +27,18 @@ namespace ToTable.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Waiter>>> GetWaiter()
         {
-            var waiter = _waiterService.GetWaiterObject();
-            if (waiter == null)
+            var waiter = await _waiterService.GetWaiterObject();
+            if (waiter == null || !waiter.Any())
             {
                 return NotFound();
             }
-            return await waiter;
+            return  Ok(waiter);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Waiter>> GetWaiter(int id)
         {
-            var waiter = _waiterService.GetWaiter(id);
+            var waiter = await _waiterService.GetWaiter(id);
             if (waiter == null)
             {
                 return NotFound();
@@ -116,7 +116,7 @@ namespace ToTable.Controllers
             {
                 return NotFound();
             }
-            return waiter;
+            return Ok(waiter);
         }
 
          [HttpGet("restaurant/{restaurantId}")]

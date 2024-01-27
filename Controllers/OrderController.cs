@@ -27,13 +27,13 @@ namespace ToTable.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrderObject()
         {
-            var order = _orderService.GetOrderObject();
-            if (order == null)
+            var order = await _orderService.GetOrderObject();
+            if (order == null || !order.Any())
             {
                 return NotFound();
             }
 
-            return await order;
+            return  Ok(order);
         }
 
         [HttpGet("{id}")]
@@ -45,7 +45,7 @@ namespace ToTable.Controllers
                 return NotFound();
             }
 
-            return await _orderService.GetOrder(id);
+            return Ok(item);
         }
 
         [HttpPut("{id}")]
@@ -111,10 +111,7 @@ namespace ToTable.Controllers
             {
                 return BadRequest("Comment cannot be empty.");
             }
-            if (comment.Length > 500)
-            {
-                return BadRequest("Comment is too long.");
-            }
+            
             var orderExists = await _orderService.OrderExists(id);
             if (!orderExists)
             {
