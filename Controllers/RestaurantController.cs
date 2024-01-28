@@ -6,6 +6,8 @@ using ToTable.Models;
 
 namespace ToTable.Controllers;
 
+[Route("api/[controller]")]
+[ApiController]
 public class RestaurantController:ControllerBase
 {
     private readonly IRestaurantService _restaurantService;
