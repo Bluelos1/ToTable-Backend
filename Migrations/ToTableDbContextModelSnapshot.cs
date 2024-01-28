@@ -100,9 +100,8 @@ namespace ToTable.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ProductCategory")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("ProductCategory")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ProductDescription")
                         .IsRequired()
@@ -149,13 +148,11 @@ namespace ToTable.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("TableQuantity")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("TableQuantity")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("WaiterQantity")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("WaiterQantity")
+                        .HasColumnType("integer");
 
                     b.HasKey("RestaurantId");
 

@@ -103,4 +103,15 @@ public class RestaurantController:ControllerBase
                 await _restaurantService.DeleteRestaurant(id);
                 return NoContent();
             }
+            
+            [HttpGet("login/{login}/{password}")]
+            public async Task<ActionResult<Restaurant>> GetRestaurantByCredentials(string login, string password)
+            {
+                var restaurant = await _restaurantService.GetRestaurantByCredentials(login, password);
+                if (restaurant == null)
+                {
+                    return NotFound();
+                }
+                return restaurant;
+            }
 }
