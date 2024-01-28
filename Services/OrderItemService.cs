@@ -123,8 +123,7 @@ public class OrderItemService : IOrderItemService
     {
         return _context.OrderItemObject.AnyAsync(x => x.ItemId == id);
     }
-
-public async Task<OrderItem> UpdateOrderItemQuantity(int orderId, int itemId, int quantity)
+    public async Task<OrderItem> UpdateOrderItemQuantity(int orderId, int itemId, int quantity)
     {
         var orderItem = await _context.OrderItemObject
             .FirstOrDefaultAsync(x => x.OrderId == orderId && x.ItemId == itemId);
