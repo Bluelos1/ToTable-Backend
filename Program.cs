@@ -64,7 +64,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Uncomment to use the global exception handling middleware
-// app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseCors("myAppCors");
 app.UseHttpsRedirection();
 app.UseSession();
