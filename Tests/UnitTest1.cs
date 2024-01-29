@@ -40,7 +40,8 @@ namespace ToTable_Backend.Tests
             var returnedProducts = (IEnumerable<Product>)okObjectResult.Value;
 
 
-            NUnit.Framework.Assert.IsTrue(fakeProductList.SequenceEqual(returnedProducts));
+            NUnit.Framework.Assert.That(() => fakeProductList.SequenceEqual(returnedProducts), Is.True);
+
 
 
 
